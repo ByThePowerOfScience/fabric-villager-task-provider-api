@@ -1,4 +1,4 @@
-package com.bythepowerofscience.taskapi.mixins;
+package com.bythepowerofscience.taskapi.mixin;
 
 import com.bythepowerofscience.taskapi.api.BackendVillagerTaskRetriever;
 import com.google.common.collect.ImmutableList;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(VillagerEntity.class)
-public abstract class VillagerBrainInterceptor {
+public abstract class VillagerEntityTaskMixin {
 	
 	@Redirect(method="initBrain", at=@At(value="INVOKE", target = "net/minecraft/entity/ai/brain/task/VillagerTaskListProvider.createCoreTasks(Lnet/minecraft/village/VillagerProfession;F)Lcom/google/common/collect/ImmutableList;"))
 	private ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> interceptCoreTasks(VillagerProfession profession, float f)

@@ -1,6 +1,6 @@
 package com.bythepowerofscience.taskapi.example;
 
-import com.bythepowerofscience.taskapi.api.WorkerVillagerTask;
+import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
@@ -52,7 +52,7 @@ public class BoneMealTask extends WorkerVillagerTask {
         }
         
         if (!itemStack.isEmpty() && BoneMealItem.useOnFertilizable(itemStack, serverWorld, currentTarget)) {
-            serverWorld.syncWorldEvent(com.bythepowerofscience.task.WorldEventConstants.PLANT_FERTILIZED, currentTarget, 0);
+            serverWorld.syncWorldEvent(2005, currentTarget, 0);
             this.setCurrentTarget(serverWorld, villagerEntity);
             this.addLookWalkTarget(villagerEntity, this.currentTarget);
             this.nextResponseTime = startTick + 40L;

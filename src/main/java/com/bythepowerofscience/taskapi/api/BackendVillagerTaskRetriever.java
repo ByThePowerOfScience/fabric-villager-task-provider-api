@@ -1,5 +1,6 @@
 package com.bythepowerofscience.taskapi.api;
 
+import com.bythepowerofscience.taskapi.impl.VillagerTaskProvider;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.ai.brain.task.Task;

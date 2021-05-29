@@ -1,18 +1,21 @@
 package com.bythepowerofscience.taskapi.api;
 
+import com.bythepowerofscience.taskapi.impl.VillagerTaskProvider;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.village.VillagerProfession;
 
 public class VillagerTaskProviderRegistry {
-	private static final ImmutableMap.Builder<VillagerProfession, com.bythepowerofscience.taskapi.api.VillagerTaskProvider> VILLAGER_TASK_PROVIDER_BUILDER = ImmutableMap.builder();
+	private static final ImmutableMap.Builder<VillagerProfession, VillagerTaskProvider> VILLAGER_TASK_PROVIDER_BUILDER = ImmutableMap.builder();
 	
-	public static void addTaskProvider(VillagerProfession executingProfession, com.bythepowerofscience.taskapi.api.VillagerTaskProvider taskListProvider)
+	public static void addTaskProvider(VillagerProfession executingProfession, VillagerTaskProvider taskListProvider)
 	{
 		VILLAGER_TASK_PROVIDER_BUILDER.put(executingProfession, taskListProvider);
 	}
 	
-	
-	protected static ImmutableMap.Builder<VillagerProfession, com.bythepowerofscience.taskapi.api.VillagerTaskProvider> getCompletedMap()
+	/**
+	 * Implementation only. Do not use.
+	 */
+	protected static ImmutableMap.Builder<VillagerProfession, VillagerTaskProvider> getCompletedMap()
 	{
 		return VILLAGER_TASK_PROVIDER_BUILDER;
 	}

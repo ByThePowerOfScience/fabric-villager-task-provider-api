@@ -1,6 +1,6 @@
 package com.bythepowerofscience.taskapi.example;
 
-import com.bythepowerofscience.taskapi.api.WorkerVillagerTask;
+import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
 import net.minecraft.block.*;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;

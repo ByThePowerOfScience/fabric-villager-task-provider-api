@@ -1,5 +1,6 @@
-package com.bythepowerofscience.taskapi.api;
+package com.bythepowerofscience.taskapi.impl;
 
+import com.bythepowerofscience.taskapi.api.VillagerTaskProviderRegistry;
 import com.bythepowerofscience.taskapi.example.BoneMealTask;
 import com.bythepowerofscience.taskapi.example.FarmerVillagerTask;
 import com.google.common.base.Function;
@@ -26,10 +27,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Provides task lists for villager professions. Called when initializing a {@code VillagerEntity}'s {@link net.minecraft.entity.ai.brain.Brain}. Must be registered with {@link com.bythepowerofscience.task.VillagerTaskProviderRegistry#addTaskProvider} before it can be called.
+ * Provides task lists for villager professions. Called when initializing a {@code VillagerEntity}'s {@link net.minecraft.entity.ai.brain.Brain}. Must be registered with {@link VillagerTaskProviderRegistry#addTaskProvider} before it can be called.
  * @apiNote All custom tasks are appended onto the universal tasks, which are stored in {@link Base}.
  * @see VillagerTaskListProvider Vanilla Reference
- * @see com.bythepowerofscience.task.WorkerVillagerTask Example Task
+ * @see WorkerVillagerTask Example Task
  * @see Task Task&lt;VillagerEntity&gt;
  */
 @SuppressWarnings({"ALL"})
@@ -75,7 +76,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Core</b> task to this {@link VillagerProfession}'s task-list.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
@@ -104,7 +105,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Work</b> task to this {@link VillagerProfession}'s task-list.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
@@ -133,17 +134,17 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Rest</b> task to this {@link VillagerProfession}'s task-list. <b>Rest</b> tasks are executed when night begins.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
 		 */
-		public final Builder addRestTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> task)
+		public final Builder addRestTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> dynamicTask)
 		{
 			if (tasksArr[REST] == null)
 				tasksArr[REST] = Lists.newArrayList();
 			
-			tasksArr[REST].add(task);
+			tasksArr[REST].add(dynamicTask);
 			
 			return this;
 		}
@@ -162,17 +163,17 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Meet</b> task to this {@link VillagerProfession}'s task-list. <b>Meet</b> tasks are executed when one villager decides to meet with another, or when a trade is initiated with the player.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
 		 */
-		public final Builder addMeetTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> task)
+		public final Builder addMeetTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> dynamicTask)
 		{
 			if (tasksArr[MEET] == null)
 				tasksArr[MEET] = Lists.newArrayList();
 			
-			tasksArr[MEET].add(task);
+			tasksArr[MEET].add(dynamicTask);
 			
 			return this;
 		}
@@ -191,17 +192,17 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds an <b>Idle</b> task to this {@link VillagerProfession}'s task-list. <b>Idle</b> tasks are executed when a villager is not performing any other action.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
 		 */
-		public final Builder addIdleTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> task)
+		public final Builder addIdleTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> dynamicTask)
 		{
 			if (tasksArr[IDLE] == null)
 				tasksArr[IDLE] = Lists.newArrayList();
 			
-			tasksArr[IDLE].add(task);
+			tasksArr[IDLE].add(dynamicTask);
 			
 			return this;
 		}
@@ -220,17 +221,17 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Panic</b> task to this {@link VillagerProfession}'s task-list. <b>Panic</b> tasks are executed when a villager is damaged.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
 		 */
-		public final Builder addPanicTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> task)
+		public final Builder addPanicTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> dynamicTask)
 		{
 			if (tasksArr[PANIC] == null)
 				tasksArr[PANIC] = Lists.newArrayList();
 			
-			tasksArr[PANIC].add(task);
+			tasksArr[PANIC].add(dynamicTask);
 			
 			return this;
 		}
@@ -249,17 +250,17 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>PreRaid</b> task to this {@link VillagerProfession}'s task-list. <b>PreRaid</b> tasks are executed during the startup of an Illager {@link net.minecraft.village.raid.Raid}<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
 		 */
-		public final Builder addPreRaidTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> task)
+		public final Builder addPreRaidTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> dynamicTask)
 		{
 			if (tasksArr[PRERAID] == null)
 				tasksArr[PRERAID] = Lists.newArrayList();
 			
-			tasksArr[PRERAID].add(task);
+			tasksArr[PRERAID].add(dynamicTask);
 			
 			return this;
 		}
@@ -278,17 +279,17 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Raid</b> task to this {@link VillagerProfession}'s task-list. <b>Raid</b> tasks are executed during an Illager {@link net.minecraft.village.raid.Raid}<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
 		 */
-		public final Builder addRaidTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> task)
+		public final Builder addRaidTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> dynamicTask)
 		{
 			if (tasksArr[RAID] == null)
 				tasksArr[RAID] = Lists.newArrayList();
 			
-			tasksArr[RAID].add(task);
+			tasksArr[RAID].add(dynamicTask);
 			
 			return this;
 		}
@@ -307,24 +308,24 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Hide</b> task to this {@link VillagerProfession}'s task-list. <b>Hide</b> tasks are executed when a bell is rung.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 * @return This {@code Builder} instance.
 		 */
-		public final Builder addHideTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> task)
+		public final Builder addHideTask(BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>> dynamicTask)
 		{
 			if (tasksArr[HIDE] == null)
 				tasksArr[HIDE] = Lists.newArrayList();
 			
-			tasksArr[HIDE].add(task);
+			tasksArr[HIDE].add(dynamicTask);
 			
 			return this;
 		}
 		
 		/**
-		 * Builds the {@link VillagerTaskProvider} instance with the given 
-		 * @return
+		 * Builds the {@link VillagerTaskProvider} instance with the given inputs.
+		 * @return VillagerTaskProvider
 		 */
 		public final VillagerTaskProvider build()
 		{
@@ -427,6 +428,11 @@ public class VillagerTaskProvider {
 		}
 		
 		
+		
+		
+		
+		
+		
 		private Builder() {
 			tasksArr = new List[9];
 		}
@@ -502,7 +508,7 @@ public class VillagerTaskProvider {
 	
 	/**
 	 * Generates {@link VillagerProfession}'s custom <b>PreRaid</b> task-list. <b>PreRaid</b> tasks are executed during the startup of an Illager {@link net.minecraft.village.raid.Raid}.
-	 * @param profession The profession of the {@code VillagerEntity} executing this task.
+	 * @param villagerProfession The profession of the {@code VillagerEntity} executing this task.
 	 * @param speed The speed of the villager. {@code 0.5F} by default.
 	 * @apiNote All custom tasks, regardless of profession, have the list of {@link Base} tasks appended before being generated.
 	 * @return {@code ImmutableList} of custom core tasks.
@@ -513,7 +519,7 @@ public class VillagerTaskProvider {
 	
 	/**
 	 * Generates {@link VillagerProfession}'s custom <b>Raid</b> task-list. <b>Raid</b> tasks are executed during an Illager {@link net.minecraft.village.raid.Raid}.
-	 * @param profession The profession of the {@code VillagerEntity} executing this task.
+	 * @param villagerProfession The profession of the {@code VillagerEntity} executing this task.
 	 * @param speed The speed of the villager. {@code 0.5F} by default.
 	 * @apiNote All custom tasks, regardless of profession, have the list of {@link Base} tasks appended before being generated.
 	 * @return {@code ImmutableList} of custom core tasks.
@@ -524,7 +530,7 @@ public class VillagerTaskProvider {
 	
 	/**
 	 * Generates {@link VillagerProfession}'s custom <b>Hide</b> task-list. <b>Hide</b> tasks are executed when a bell is rung.
-	 * @param profession The profession of the {@code VillagerEntity} executing this task.
+	 * @param villagerProfession The profession of the {@code VillagerEntity} executing this task.
 	 * @param speed The speed of the villager. {@code 0.5F} by default.
 	 * @apiNote All custom tasks, regardless of profession, have the list of {@link Base} tasks appended before being generated.
 	 * @return {@code ImmutableList} of custom core tasks.
@@ -535,7 +541,7 @@ public class VillagerTaskProvider {
 	
 	
 	/**
-	 * Contains the tasks that are executed for <i>all</i> villagers, regardless of their {@link VillagerProfession}.  To add custom tasks for specific professions, use {@link com.bythepowerofscience.task.VillagerTaskProviderRegistry#addTaskProvider}.
+	 * Contains the tasks that are executed for <i>all</i> villagers, regardless of their {@link VillagerProfession}.  To add custom tasks for specific professions, use {@link VillagerTaskProviderRegistry#addTaskProvider}.
 	 * @apiNote <b>Play</b> tasks are adjusted here, as baby villagers have no profession.
 	 */
 	public static final class Base {
@@ -574,7 +580,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Core</b> task to ALL villagers' task-lists.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 */
@@ -582,27 +588,7 @@ public class VillagerTaskProvider {
 		{
 			if (coreTasks == null)
 			{ 
-				coreTasks = Lists.newArrayList(
-						(profession, f) -> Pair.of(0, new StayAboveWaterTask(0.8F)),
-						(profession, f) -> Pair.of(0, new OpenDoorsTask()),
-						(profession, f) -> Pair.of(0, new LookAroundTask(45, 90)),
-						(profession, f) -> Pair.of(0, new PanicTask()),
-						(profession, f) -> Pair.of(0, new WakeUpTask()),
-						(profession, f) -> Pair.of(0, new HideWhenBellRingsTask()),
-						(profession, f) -> Pair.of(0, new StartRaidTask()),
-						(profession, f) -> Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE)),
-						(profession, f) -> Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.POTENTIAL_JOB_SITE)),
-						(profession, f) -> Pair.of(1, new WanderAroundTask()),
-						(profession, f) -> Pair.of(2, new WorkStationCompetitionTask(profession)),
-						(profession, f) -> Pair.of(3, new FollowCustomerTask(f)),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new WalkToNearestVisibleWantedItemTask(f, false, 4)),
-						(profession, f) -> Pair.of(6, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())),
-						(profession, f) -> Pair.of(7, new WalkTowardJobSiteTask(f)),
-						(profession, f) -> Pair.of(8, new TakeJobSiteTask(f)),
-						(profession, f) -> Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false, Optional.of((byte)14))),
-						(profession, f) -> Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true, Optional.of((byte)14))),
-						(profession, f) -> Pair.of(10, new GoToWorkTask()),
-						(profession, f) -> Pair.of(10, new LoseJobOnSiteLossTask()));
+				coreTasks = getDynamicDefaultCoreTasks();
 			}
 			coreTasks.add(dynamicTask);
 		}
@@ -623,7 +609,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Work</b> task to ALL villagers' task-lists.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 */
@@ -631,25 +617,7 @@ public class VillagerTaskProvider {
 		{
 			if (workTasks == null)
 			{
-				workTasks = Lists.newArrayList(
-					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-							ImmutableList.of(
-									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-									Pair.of(new WaitTask(30, 60), 8)))),
-					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-							ImmutableList.of(
-									Pair.of(profession == VillagerProfession.FARMER ? new FarmerWorkTask() : new VillagerWorkTask(), 7),
-									Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 0.4F, 4), 2),
-									Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 0.4F, 1, 10), 5),
-									Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, f, 1, 6, MemoryModuleType.JOB_SITE), 5),
-									Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5),
-									Pair.of(new BoneMealTask(), profession == VillagerProfession.FARMER ? 4 : 7)))),
-					(profession, f) -> Pair.of(10, new HoldTradeOffersTask(400, 1600)),
-					(profession, f) -> Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
-					(profession, f) -> Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.JOB_SITE, f, 9, 100, 1200)),
-					(profession, f) -> Pair.of(3, new GiveGiftsToHeroTask(100)),
-					(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
+				workTasks = getDynamicDefaultWorkTasks();
 			}
 			
 			workTasks.add(dynamicTask);
@@ -672,7 +640,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Play</b> task to ALL villagers' task-lists.<p>  <b>Play</b> tasks are executed by baby villagers while in their "play" state.
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code Function}, taking as an argument: the <b>speed</b> of the villager; returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList}) and the <b>task</b> to be performed.
 		 */
@@ -680,30 +648,7 @@ public class VillagerTaskProvider {
 		{
 			if (playTasks == null)
 			{
-				playTasks = Lists.newArrayList(
-						f -> Pair.of(0, new WanderAroundTask(80, 120)),
-						f -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new FollowMobTask(EntityType.CAT, 8.0F), 8),
-										Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-										Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-										Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
-										Pair.of(new WaitTask(30, 60), 2)))),
-						f -> Pair.of(5, new PlayWithVillagerBabiesTask()),
-						f -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableMap.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleState.VALUE_ABSENT),
-								ImmutableList.of(
-										Pair.of(FindEntityTask.create(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 2),
-										Pair.of(FindEntityTask.create(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 1),
-										Pair.of(new FindWalkTargetTask(f), 1),
-										Pair.of(new GoTowardsLookTarget(f, 2), 1),
-										Pair.of(new JumpInBedTask(f), 2),
-										Pair.of(new WaitTask(20, 40), 2)))),
-						f -> Pair.of(99, new ScheduleActivityTask())
-				);
+				playTasks = getDynamicDefaultPlayTasks();
 			}
 			
 			playTasks.add(dynamicTask);
@@ -726,7 +671,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Rest</b> task to ALL villagers' task-lists. <b>Rest</b> tasks are executed when night begins.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList} and the <b>task</b> to be performed.
 		 */
@@ -734,23 +679,7 @@ public class VillagerTaskProvider {
 		{
 			if (restTasks == null)
 			{
-				restTasks = Lists.newArrayList(
-						(profession, f) -> Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.HOME, f, 1, 150, 1200)),
-						(profession, f) -> Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME)),
-						(profession, f) -> Pair.of(3, new SleepTask()),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT),
-								ImmutableList.of(
-										Pair.of(new WalkHomeTask(f), 1),
-										Pair.of(new WanderIndoorsTask(f), 4),
-										Pair.of(new GoToPointOfInterestTask(f, 4), 2),
-										Pair.of(new WaitTask(20, 40), 2)))),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-										Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-										Pair.of(new WaitTask(30, 60), 8)))),
-						(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
+				restTasks = getDynamicDefaultRestTasks();
 			}
 			
 			restTasks.add(dynamicTask);
@@ -773,7 +702,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Meet</b> task to ALL villagers' task-lists. <b>Meet</b> tasks are executed when one villager decides to meet with another, or when a trade is initiated with the player.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList} and the <b>task</b> to be performed.
 		 */
@@ -781,33 +710,7 @@ public class VillagerTaskProvider {
 		{
 			if (meetTasks == null)
 			{
-				meetTasks = Lists.newArrayList(
-						(profession, f) -> Pair.of(2, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new GoToIfNearbyTask(MemoryModuleType.MEETING_POINT, 0.4F, 40), 2),
-										Pair.of(new MeetVillagerTask(), 2)))),
-						(profession, f) -> Pair.of(10, new HoldTradeOffersTask(400, 1600)),
-						(profession, f) -> Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
-						(profession, f) -> Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.MEETING_POINT, f, 6, 100, 200)),
-						(profession, f) -> Pair.of(3, new GiveGiftsToHeroTask(100)),
-						(profession, f) -> Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT)),
-						(profession, f) -> Pair.of(3, (Task<? super VillagerEntity>) new CompositeTask(
-								ImmutableMap.of(),
-								ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET),
-								CompositeTask.Order.ORDERED,
-								CompositeTask.RunMode.RUN_ONE,
-								ImmutableList.of(Pair.of(new GatherItemsVillagerTask(), 1)))),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new FollowMobTask(EntityType.CAT, 8.0F), 8),
-										Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-										Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-										Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
-										Pair.of(new WaitTask(30, 60), 2)))),
-						(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
+				meetTasks = getDynamicDefaultMeetTasks();
 			}
 			
 			meetTasks.add(dynamicTask);
@@ -826,7 +729,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds an <b>Idle</b> task to ALL villagers' task-lists. <b>Idle</b> tasks are executed when a villager is not performing any other action.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList} and the <b>task</b> to be performed.
 		 */
@@ -834,45 +737,7 @@ public class VillagerTaskProvider {
 		{
 			if (idleTasks == null)
 			{
-				idleTasks = Lists.newArrayList(
-						(profession, f) -> {
-							Predicate<PassiveEntity> isReadyToBreed = PassiveEntity::isReadyToBreed;
-							return Pair.of(2, (Task<? super VillagerEntity>) new RandomTask(
-									ImmutableList.of(
-											Pair.of(FindEntityTask.create(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 2),
-											Pair.of(new FindEntityTask(EntityType.VILLAGER, 8, isReadyToBreed, isReadyToBreed, MemoryModuleType.BREED_TARGET, f, 2), 1),
-											Pair.of(FindEntityTask.create(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 1),
-											Pair.of(new FindWalkTargetTask(f), 1),
-											Pair.of(new GoTowardsLookTarget(f, 2), 1),
-											Pair.of(new JumpInBedTask(f), 1),
-											Pair.of(new WaitTask(30, 60), 1))));
-						},
-						(profession, f) -> Pair.of(3, new GiveGiftsToHeroTask(100)),
-						(profession, f) -> Pair.of(3, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
-						(profession, f) -> Pair.of(3, new HoldTradeOffersTask(400, 1600)),
-						(profession, f) -> Pair.of(3, (Task<? super VillagerEntity>) new CompositeTask(
-								ImmutableMap.of(),
-								ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET),
-								CompositeTask.Order.ORDERED,
-								CompositeTask.RunMode.RUN_ONE,
-								ImmutableList.of(Pair.of(new GatherItemsVillagerTask(), 1)))),
-						(profession, f) -> Pair.of(3, (Task<? super VillagerEntity>) new CompositeTask(
-								ImmutableMap.of(),
-								ImmutableSet.of(MemoryModuleType.BREED_TARGET),
-								CompositeTask.Order.ORDERED,
-								CompositeTask.RunMode.RUN_ONE,
-								ImmutableList.of(Pair.of(new VillagerBreedTask(), 1)))),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new FollowMobTask(EntityType.CAT, 8.0F), 8),
-										Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-										Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-										Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
-										Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
-										Pair.of(new WaitTask(30, 60), 2)))),
-						(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
+				idleTasks = getDynamicDefaultIdleTasks();
 			}
 			
 			idleTasks.add(dynamicTask);
@@ -891,7 +756,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Panic</b> task to ALL villagers' task-lists. <b>Panic</b> tasks are executed when a villager is damaged.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList} and the <b>task</b> to be performed.
 		 */
@@ -899,16 +764,7 @@ public class VillagerTaskProvider {
 		{
 			if (panicTasks == null)
 			{
-				panicTasks = Lists.newArrayList(
-						(profession, f) -> Pair.of(0, new StopPanickingTask()),
-						(profession, f) -> Pair.of(1, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_HOSTILE, f * 1.5F, 6, false)),
-						(profession, f) -> Pair.of(1, GoToRememberedPositionTask.toEntity(MemoryModuleType.HURT_BY_ENTITY, f * 1.5F, 6, false)),
-						(profession, f) -> Pair.of(3, new FindWalkTargetTask(f * 1.5F, 2, 2)),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-															ImmutableList.of(
-																	Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-																	Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-																	Pair.of(new WaitTask(30, 60), 8)))));
+				panicTasks = getDynamicDefaultPanicTasks();
 			}
 			
 			panicTasks.add(dynamicTask);
@@ -927,7 +783,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>PreRaid</b> task to ALL villagers' task-lists. <b>PreRaid</b> tasks are executed during the startup of an Illager {@link net.minecraft.village.raid.Raid}<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList} and the <b>task</b> to be performed.
 		 */
@@ -935,19 +791,7 @@ public class VillagerTaskProvider {
 		{
 			if (preRaidTasks == null)
 			{
-				preRaidTasks = Lists.newArrayList(
-						(profession, f) -> Pair.of(0, new RingBellTask()),
-						(profession, f) -> Pair.of(0, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new VillagerWalkTowardsTask(MemoryModuleType.MEETING_POINT, f * 1.5F, 2, 150, 200), 6),
-										Pair.of(new FindWalkTargetTask(f * 1.5F), 2)))),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-										Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-										Pair.of(new WaitTask(30, 60), 8)))),
-						(profession, f) -> Pair.of(99, new EndRaidTask())
-				);
+				preRaidTasks = getDynamicDefaultPreRaidTasks();
 			}
 			
 			preRaidTasks.add(dynamicTask);
@@ -967,7 +811,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Raid</b> task to ALL villagers' task-lists. <b>Raid</b> tasks are executed during an Illager {@link net.minecraft.village.raid.Raid}<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList} and the <b>task</b> to be performed.
 		 */
@@ -975,20 +819,7 @@ public class VillagerTaskProvider {
 		{
 			if (raidTasks == null)
 			{
-				raidTasks = Lists.newArrayList(
-						(profession, f) -> Pair.of(0, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new SeekSkyAfterRaidWinTask(f), 5),
-										Pair.of(new RunAroundAfterRaidTask(f * 1.1F), 2)))),
-						(profession, f) -> Pair.of(0, new CelebrateRaidWinTask(600, 600)),
-						(profession, f) -> Pair.of(2, new HideInHomeDuringRaidTask(24, f * 1.4F)),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-										Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-										Pair.of(new WaitTask(30, 60), 8)))),
-						(profession, f) -> Pair.of(99, new EndRaidTask())
-				);
+				raidTasks = getDynamicDefaultRaidTasks();
 			}
 			
 			raidTasks.add(dynamicTask);
@@ -1008,7 +839,7 @@ public class VillagerTaskProvider {
 		/**
 		 * Adds a <b>Hide</b> task to ALL villagers' task-lists. <b>Hide</b> tasks are executed when a bell is rung.<p>
 		 * Example Usage:
-		 * <blockquote><pre>addCoreTask((profession, speed) -> Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
+		 * <blockquote><pre>addCoreTask((profession, speed) -&gt; Pair.of(5, new FarmerVillagerTask(profession, speed)));</pre></blockquote>
 		 * @apiNote Used for tasks that require the <b>villager speed</b> or <b>villager profession</b> as arguments, e.g. moving the villager to a location.
 		 * @param dynamicTask {@code BiFunction}, taking as arguments: the <b>profession</b> of the villager attempting to execute the task, the <b>speed</b> of the villager ({@code 0.5F} by default); returns: a {@code Pair} containing the <b>weight</b> of the task (as used in {@link net.minecraft.util.collection.WeightedList} and the <b>task</b> to be performed.
 		 */
@@ -1016,15 +847,7 @@ public class VillagerTaskProvider {
 		{
 			if (hideTasks == null)
 			{
-				hideTasks = Lists.newArrayList(
-						(profession, f) -> Pair.of(0, new ForgetBellRingTask(15, 3)),
-						(profession, f) -> Pair.of(1, new HideInHomeTask(32, f * 1.25F, 2)),
-						(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
-								ImmutableList.of(
-										Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
-										Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-										Pair.of(new WaitTask(30, 60), 8))))
-				);
+				hideTasks = getDynamicDefaultHideTasks();
 			}
 			
 			hideTasks.add(dynamicTask);
@@ -1033,17 +856,25 @@ public class VillagerTaskProvider {
 		
 		
 		
-		/**
-		 * Used by the API to retrieve tasks
-		 */
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getCoreTasks(VillagerProfession p, float f)
-		{
-			if (coreTasks != null)
-				return applyToTasks(coreTasks, p, f);
-			else
-				return getDefaultCoreTasks(p, f);
-		}
 		
+		
+		
+		
+		/**
+		 * Defaults
+		 */
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createWorkTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
 		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultCoreTasks(VillagerProfession profession, float f)
 		{
 			return ImmutableList.of(
@@ -1069,17 +900,42 @@ public class VillagerTaskProvider {
 					Pair.of(10, new LoseJobOnSiteLossTask()));
 		}
 		
-		
-		
-		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getWorkTasks(VillagerProfession p, float f)
-		{
-			if (workTasks != null)
-				return applyToTasks(workTasks, p, f);
-			else
-				return getDefaultWorkTasks(p, f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultCoreTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(0, new StayAboveWaterTask(0.8F)),
+					(profession, f) -> Pair.of(0, new OpenDoorsTask()),
+					(profession, f) -> Pair.of(0, new LookAroundTask(45, 90)),
+					(profession, f) -> Pair.of(0, new PanicTask()),
+					(profession, f) -> Pair.of(0, new WakeUpTask()),
+					(profession, f) -> Pair.of(0, new HideWhenBellRingsTask()),
+					(profession, f) -> Pair.of(0, new StartRaidTask()),
+					(profession, f) -> Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE)),
+					(profession, f) -> Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.POTENTIAL_JOB_SITE)),
+					(profession, f) -> Pair.of(1, new WanderAroundTask()),
+					(profession, f) -> Pair.of(2, new WorkStationCompetitionTask(profession)),
+					(profession, f) -> Pair.of(3, new FollowCustomerTask(f)),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new WalkToNearestVisibleWantedItemTask(f, false, 4)),
+					(profession, f) -> Pair.of(6, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())),
+					(profession, f) -> Pair.of(7, new WalkTowardJobSiteTask(f)),
+					(profession, f) -> Pair.of(8, new TakeJobSiteTask(f)),
+					(profession, f) -> Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false, Optional.of((byte)14))),
+					(profession, f) -> Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true, Optional.of((byte)14))),
+					(profession, f) -> Pair.of(10, new GoToWorkTask()),
+					(profession, f) -> Pair.of(10, new LoseJobOnSiteLossTask()));
 		}
 		
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createWorkTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
 		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultWorkTasks(final VillagerProfession profession, final float f)
 		{
 			Object villagerWorkTask2;
@@ -1106,17 +962,40 @@ public class VillagerTaskProvider {
 					Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		
-		
-		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPlayTasks(float f)
-		{
-			if (playTasks != null)
-				return playTasks.stream().map(func -> func.apply(f)).collect(Collectors.toList());
-			else
-				return getDefaultPlayTasks(f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultWorkTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new WaitTask(30, 60), 8)))),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									//This is the only line you need to change by hand. Sub out the "Object workTask2" part for an inline if statement.
+									Pair.of(profession == VillagerProfession.FARMER ? new FarmerWorkTask() : new VillagerWorkTask(), 7),
+									Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 0.4F, 4), 2),
+									Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 0.4F, 1, 10), 5),
+									Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, f, 1, 6, MemoryModuleType.JOB_SITE), 5),
+									Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5),
+									Pair.of(new BoneMealTask(), profession == VillagerProfession.FARMER ? 4 : 7)))),
+					(profession, f) -> Pair.of(10, new HoldTradeOffersTask(400, 1600)),
+					(profession, f) -> Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
+					(profession, f) -> Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.JOB_SITE, f, 9, 100, 1200)),
+					(profession, f) -> Pair.of(3, new GiveGiftsToHeroTask(100)),
+					(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
 		}
 		
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createPlayTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param f
+		 * @return
+		 */
 		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultPlayTasks(final float f)
 		{
 			return ImmutableList.of(
@@ -1135,17 +1014,36 @@ public class VillagerTaskProvider {
 					Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		
-		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getRestTasks(VillagerProfession p, float f)
-		{
-			if (restTasks != null)
-				return applyToTasks(restTasks, p, f);
-			else
-				return getDefaultRestTasks(p, f);
+		private static List<Function<Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultPlayTasks() {
+			return Lists.newArrayList(
+					f -> Pair.of(0, new WanderAroundTask(80, 120)),
+					f -> createBusyFollowTask(),
+					f -> Pair.of(5, new PlayWithVillagerBabiesTask()),
+					f -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableMap.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleState.VALUE_ABSENT),
+							ImmutableList.of(
+									Pair.of(FindEntityTask.create(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 2),
+									Pair.of(FindEntityTask.create(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 1),
+									Pair.of(new FindWalkTargetTask(f), 1),
+									Pair.of(new GoTowardsLookTarget(f, 2), 1),
+									Pair.of(new JumpInBedTask(f), 2),
+									Pair.of(new WaitTask(20, 40), 2)))),
+					f -> Pair.of(99, new ScheduleActivityTask())
+			);
 		}
 		
-		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultRestTasks(final VillagerProfession p, final float f)
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createRestTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
+		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultRestTasks(final VillagerProfession profession, final float f)
 		{
 			return ImmutableList.of(
 					Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.HOME, f, 1, 150, 1200)),
@@ -1162,17 +1060,39 @@ public class VillagerTaskProvider {
 					Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		
-		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getMeetTasks(VillagerProfession p, float f)
-		{
-			if (meetTasks != null)
-				return applyToTasks(meetTasks, p, f);
-			else
-				return getDefaultMeetTasks(p, f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultRestTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.HOME, f, 1, 150, 1200)),
+					(profession, f) -> Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME)),
+					(profession, f) -> Pair.of(3, new SleepTask()),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT),
+							ImmutableList.of(
+									Pair.of(new WalkHomeTask(f), 1),
+									Pair.of(new WanderIndoorsTask(f), 4),
+									Pair.of(new GoToPointOfInterestTask(f, 4), 2),
+									Pair.of(new WaitTask(20, 40), 2)))),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new WaitTask(30, 60), 8)))),
+					(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultMeetTasks(final VillagerProfession p, final float f)
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createMeetTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
+		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultMeetTasks(final VillagerProfession profession, final float f)
 		{
 			return ImmutableList.of(
 					Pair.of(2, new RandomTask(
@@ -1194,17 +1114,49 @@ public class VillagerTaskProvider {
 					Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		
-		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getIdleTasks(VillagerProfession p, float f)
-		{
-			if (idleTasks != null)
-				return applyToTasks(idleTasks, p, f);
-			else
-				return getDefaultIdleTasks(p, f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultMeetTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(2, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new GoToIfNearbyTask(MemoryModuleType.MEETING_POINT, 0.4F, 40), 2),
+									Pair.of(new MeetVillagerTask(), 2)))),
+					(profession, f) -> Pair.of(10, new HoldTradeOffersTask(400, 1600)),
+					(profession, f) -> Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
+					(profession, f) -> Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.MEETING_POINT, f, 6, 100, 200)),
+					(profession, f) -> Pair.of(3, new GiveGiftsToHeroTask(100)),
+					(profession, f) -> Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT)),
+					(profession, f) -> Pair.of(3, (Task<? super VillagerEntity>) new CompositeTask(
+							ImmutableMap.of(),
+							ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET),
+							CompositeTask.Order.ORDERED,
+							CompositeTask.RunMode.RUN_ONE,
+							ImmutableList.of(Pair.of(new GatherItemsVillagerTask(), 1)))),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.CAT, 8.0F), 8),
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
+									Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
+									Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
+									Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
+									Pair.of(new WaitTask(30, 60), 2)))),
+					(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultIdleTasks(final VillagerProfession p, final float f)
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createIdleTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
+		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultIdleTasks(final VillagerProfession profession, final float f)
 		{
 			final Predicate<PassiveEntity> isReadyToBreed = PassiveEntity::isReadyToBreed; //Workaround because the compiler's stupid
 			
@@ -1237,17 +1189,62 @@ public class VillagerTaskProvider {
 					Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		
-		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPanicTasks(VillagerProfession p, float f)
-		{
-			if (panicTasks != null)
-				return applyToTasks(panicTasks, p, f);
-			else
-				return getDefaultPanicTasks(p, f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultIdleTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> {
+						Predicate<PassiveEntity> isReadyToBreed = PassiveEntity::isReadyToBreed;
+						return Pair.of(2, (Task<? super VillagerEntity>) new RandomTask(
+								ImmutableList.of(
+										Pair.of(FindEntityTask.create(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 2),
+										Pair.of(new FindEntityTask(EntityType.VILLAGER, 8, isReadyToBreed, isReadyToBreed, MemoryModuleType.BREED_TARGET, f, 2), 1),
+										Pair.of(FindEntityTask.create(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, f, 2), 1),
+										Pair.of(new FindWalkTargetTask(f), 1),
+										Pair.of(new GoTowardsLookTarget(f, 2), 1),
+										Pair.of(new JumpInBedTask(f), 1),
+										Pair.of(new WaitTask(30, 60), 1))));
+					},
+					(profession, f) -> Pair.of(3, new GiveGiftsToHeroTask(100)),
+					(profession, f) -> Pair.of(3, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
+					(profession, f) -> Pair.of(3, new HoldTradeOffersTask(400, 1600)),
+					(profession, f) -> Pair.of(3, (Task<? super VillagerEntity>) new CompositeTask(
+							ImmutableMap.of(),
+							ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET),
+							CompositeTask.Order.ORDERED,
+							CompositeTask.RunMode.RUN_ONE,
+							ImmutableList.of(Pair.of(new GatherItemsVillagerTask(), 1)))),
+					(profession, f) -> Pair.of(3, (Task<? super VillagerEntity>) new CompositeTask(
+							ImmutableMap.of(),
+							ImmutableSet.of(MemoryModuleType.BREED_TARGET),
+							CompositeTask.Order.ORDERED,
+							CompositeTask.RunMode.RUN_ONE,
+							ImmutableList.of(Pair.of(new VillagerBreedTask(), 1)))),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.CAT, 8.0F), 8),
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
+									Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
+									Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
+									Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
+									Pair.of(new WaitTask(30, 60), 2)))),
+					(profession, f) -> Pair.of(99, new ScheduleActivityTask()));
 		}
 		
-		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultPanicTasks(final VillagerProfession p, final float f)
+		
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createPanicTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
+		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultPanicTasks(final VillagerProfession profession, final float f)
 		{
 			float g = f * 1.5F;
 			return ImmutableList.of(
@@ -1258,18 +1255,33 @@ public class VillagerTaskProvider {
 					createBusyFollowTask());
 		}
 		
-		
-		
-		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPreRaidTasks(VillagerProfession p, float f)
-		{
-			if (preRaidTasks != null)
-				return applyToTasks(preRaidTasks, p, f);
-			else
-				return getDefaultPreRaidTasks(p, f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultPanicTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(0, new StopPanickingTask()),
+					(profession, f) -> Pair.of(1, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_HOSTILE, f * 1.5F, 6, false)),
+					(profession, f) -> Pair.of(1, GoToRememberedPositionTask.toEntity(MemoryModuleType.HURT_BY_ENTITY, f * 1.5F, 6, false)),
+					(profession, f) -> Pair.of(3, new FindWalkTargetTask(f * 1.5F, 2, 2)),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new WaitTask(30, 60), 8)))));
 		}
 		
-		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultPreRaidTasks(final VillagerProfession p, final float f)
+		
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createPreRaidTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
+		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultPreRaidTasks(final VillagerProfession profession, final float f)
 		{
 			return ImmutableList.of(
 					Pair.of(0, new RingBellTask()),
@@ -1281,15 +1293,36 @@ public class VillagerTaskProvider {
 					Pair.of(99, new EndRaidTask()));
 		}
 		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getRaidTasks(VillagerProfession p, float f)
-		{
-			if (raidTasks != null)
-				return applyToTasks(raidTasks, p, f);
-			else
-				return getDefaultRaidTasks(p, f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultPreRaidTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(0, new RingBellTask()),
+					(profession, f) -> Pair.of(0, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new VillagerWalkTowardsTask(MemoryModuleType.MEETING_POINT, f * 1.5F, 2, 150, 200), 6),
+									Pair.of(new FindWalkTargetTask(f * 1.5F), 2)))),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new WaitTask(30, 60), 8)))),
+					(profession, f) -> Pair.of(99, new EndRaidTask())
+			);
 		}
 		
-		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultRaidTasks(final VillagerProfession p, final float f)
+		
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createRaidTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
+		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultRaidTasks(final VillagerProfession profession, final float f)
 		{
 			return ImmutableList.of(
 					Pair.of(0, new RandomTask(
@@ -1302,15 +1335,36 @@ public class VillagerTaskProvider {
 					Pair.of(99, new EndRaidTask()));
 		}
 		
-		protected static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getHideTasks(VillagerProfession p, float f)
-		{
-			if (hideTasks != null)
-				return applyToTasks(hideTasks, p, f);
-			else
-				return getDefaultHideTasks(p, f);
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultRaidTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(0, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new SeekSkyAfterRaidWinTask(f), 5),
+									Pair.of(new RunAroundAfterRaidTask(f * 1.1F), 2)))),
+					(profession, f) -> Pair.of(0, new CelebrateRaidWinTask(600, 600)),
+					(profession, f) -> Pair.of(2, new HideInHomeDuringRaidTask(24, f * 1.4F)),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new WaitTask(30, 60), 8)))),
+					(profession, f) -> Pair.of(99, new EndRaidTask())
+			);
 		}
 		
-		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultHideTasks(final VillagerProfession p, final float f)
+		
+		/**
+		 * Maintenance instructions:
+		 * <ol>
+		 *     <li>Copy list from {@link VillagerTaskListProvider#createHideTasks} and paste in both methods.</li>
+		 *     <li>Prepend {@code (profession, f) -> } for every unique {@code Pair<Integer, Task>} in {@code getDefaultDynamicTasks}</li>
+		 *     <li>If you get any compiler errors, sort it out by casting the misbehaving task to {@code Task<? super VillagerEntity>)}.</li>
+		 * </ol>
+		 * @param profession
+		 * @param f
+		 * @return
+		 */
+		private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getDefaultHideTasks(final VillagerProfession profession, final float f)
 		{
 			return ImmutableList.of(
 					Pair.of(0, new ForgetBellRingTask(15, 3)),
@@ -1318,7 +1372,21 @@ public class VillagerTaskProvider {
 					createBusyFollowTask());
 		}
 		
-		private static Pair<Integer, ? extends Task<? super VillagerEntity>> createBusyFollowTask()
+		private static List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getDynamicDefaultHideTasks() {
+			return Lists.newArrayList(
+					(profession, f) -> Pair.of(0, new ForgetBellRingTask(15, 3)),
+					(profession, f) -> Pair.of(1, new HideInHomeTask(32, f * 1.25F, 2)),
+					(profession, f) -> Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
+							ImmutableList.of(
+									Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
+									Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
+									Pair.of(new WaitTask(30, 60), 8))))
+			);
+		}
+		
+		
+		
+		protected static Pair<Integer, ? extends Task<? super VillagerEntity>> createBusyFollowTask()
 		{
 			return Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
 					ImmutableList.of(
@@ -1327,7 +1395,7 @@ public class VillagerTaskProvider {
 							Pair.of(new WaitTask(30, 60), 8))));
 		}
 		
-		private static Pair<Integer, Task<? super VillagerEntity>> createFreeFollowTask() {
+		protected static Pair<Integer, Task<? super VillagerEntity>> createFreeFollowTask() {
 			return Pair.of(5, (Task<? super VillagerEntity>) new RandomTask(
 					ImmutableList.of(
 							Pair.of(new FollowMobTask(EntityType.CAT, 8.0F), 8),
@@ -1339,9 +1407,128 @@ public class VillagerTaskProvider {
 							Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
 							Pair.of(new WaitTask(30, 60), 2))));
 		}
+		
+		
+		/**
+		 * API RETRIEVAL METHOD
+		 */
+		
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getCoreTasks(VillagerProfession p, float f)
+		{
+			if (coreTasks != null)
+				return applyToTasks(coreTasks, p, f);
+			else
+				return getDefaultCoreTasks(p, f);
+		}
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getWorkTasks(VillagerProfession p, float f)
+		{
+			if (workTasks != null)
+				return applyToTasks(workTasks, p, f);
+			else
+				return getDefaultWorkTasks(p, f);
+		}
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPlayTasks(float f)
+		{
+			if (playTasks != null)
+				return playTasks.stream().map(func -> func.apply(f)).collect(Collectors.toList());
+			else
+				return getDefaultPlayTasks(f);
+		}
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getRestTasks(VillagerProfession p, float f)
+		{
+			if (restTasks != null)
+				return applyToTasks(restTasks, p, f);
+			else
+				return getDefaultRestTasks(p, f);
+		}
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getMeetTasks(VillagerProfession p, float f)
+		{
+			if (meetTasks != null)
+				return applyToTasks(meetTasks, p, f);
+			else
+				return getDefaultMeetTasks(p, f);
+		}
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getIdleTasks(VillagerProfession p, float f)
+		{
+			if (idleTasks != null)
+				return applyToTasks(idleTasks, p, f);
+			else
+				return getDefaultIdleTasks(p, f);
+		}
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPanicTasks(VillagerProfession p, float f)
+		{
+			if (panicTasks != null)
+				return applyToTasks(panicTasks, p, f);
+			else
+				return getDefaultPanicTasks(p, f);
+		}
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPreRaidTasks(VillagerProfession p, float f)
+		{
+			if (preRaidTasks != null)
+				return applyToTasks(preRaidTasks, p, f);
+			else
+				return getDefaultPreRaidTasks(p, f);
+		}
+		
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getRaidTasks(VillagerProfession p, float f)
+		{
+			if (raidTasks != null)
+				return applyToTasks(raidTasks, p, f);
+			else
+				return getDefaultRaidTasks(p, f);
+		}
+		
+		
+		/**
+		 * Do not use.
+		 */
+		public static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> getHideTasks(VillagerProfession p, float f)
+		{
+			if (hideTasks != null)
+				return applyToTasks(hideTasks, p, f);
+			else
+				return getDefaultHideTasks(p, f);
+		}
+		
+		
+		
 	}
-	
-	
 	
 	
 	private static List<Pair<Integer, ? extends Task<? super VillagerEntity>>> applyToTasks(List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> l, VillagerProfession p, float f)

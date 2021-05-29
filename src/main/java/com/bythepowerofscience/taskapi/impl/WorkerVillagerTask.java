@@ -1,4 +1,4 @@
-package com.bythepowerofscience.taskapi.api;
+package com.bythepowerofscience.taskapi.impl;
 
 
 import com.bythepowerofscience.taskapi.example.FarmerVillagerTask;
@@ -135,7 +135,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     
     /**
 	 * Clears all potential targets stored, scans for new potential targets, then selects one randomly as the current target.
-     * @apiNote Programs should not override this method, instead overriding {@link this#chooseRandomTarget}.
+     * @apiNote Programs should not override this method, instead overriding {@link WorkerVillagerTask#chooseRandomTarget}.
      * @param serverWorld The {@code ServerWorld} this task is being executed in.
      * @param villagerEntity The {@code VillagerEntity} currently executing this task.
      */
