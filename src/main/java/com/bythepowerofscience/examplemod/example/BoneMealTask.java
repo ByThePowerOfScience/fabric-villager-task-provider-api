@@ -1,4 +1,4 @@
-package com.bythepowerofscience.taskapi.example;
+package com.bythepowerofscience.examplemod.example;
 
 import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
 import net.minecraft.block.Block;

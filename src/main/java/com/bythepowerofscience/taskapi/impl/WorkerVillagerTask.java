@@ -1,13 +1,13 @@
 package com.bythepowerofscience.taskapi.impl;
 
 
-import com.bythepowerofscience.taskapi.example.FarmerVillagerTask;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.brain.task.FarmerVillagerTask;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -22,7 +22,6 @@ import java.util.List;
 /**
  * A helper class for creating simple world-affecting {@code VillagerTask}s, including pre-made functions for scanning for targets, etc.
  * @apiNote Tasks may also extend {@code Task&lt;VillagerEntity&gt;}.
- * @see FarmerVillagerTask
  * @see net.minecraft.entity.ai.brain.task.FarmerVillagerTask
  * @see net.minecraft.entity.ai.brain.task.BoneMealTask
  * @see Task
@@ -67,7 +66,6 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * @param pos The position of the block in the world.
      * @param world The serverworld in which the block exists.
      * @return true if the block at that position satisfies the requirements to be interacted with.
-     * @see FarmerVillagerTask
      */
     protected abstract boolean isSuitableTarget(BlockPos pos, ServerWorld world);
 
@@ -86,7 +84,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     protected abstract boolean checkRunConditions(ServerWorld serverWorld, VillagerEntity villagerEntity);
     
     /**
-     * If this task should not run when the doMobGriefing gamerule is set to false.<p>
+     * If this task should run only when {@code doMobGriefing} is enabled.<p>
      * Generally necessary for any tasks that break blocks, but not necessary if they only <i>modify</i> blocks.<p>
      * 
      * Example: {@link FarmerVillagerTask} needs to break crops to harvest them, so its implementation would return {@code true}.<p>
@@ -97,8 +95,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     
     /**
      * The world action to be performed on the currently-targeted block position.<p>
-     * 
-     * @see FarmerVillagerTask
+     *
      * @param currentTarget The {@link BlockPos} of the currently-targeted block.
      * @param serverWorld The {@link ServerWorld} the block is located in.
      * @param villagerEntity The {@link VillagerEntity} acting upon this block.
@@ -155,7 +152,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
             for (int j = -1; j <= 1; ++j) {
                 for (int k = -1; k <= 1; ++k) 
                 {
-                    mutable.set((Vec3i)villagerEntity.getBlockPos(), i, j, k);
+                    mutable.set(villagerEntity.getBlockPos(), i, j, k);
                     
                     if (this.isSuitableTarget(mutable, serverWorld)) 
                         addPotentialTarget(mutable);

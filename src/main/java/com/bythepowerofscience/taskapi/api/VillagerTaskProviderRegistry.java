@@ -12,9 +12,7 @@ public class VillagerTaskProviderRegistry {
 		VILLAGER_TASK_PROVIDER_BUILDER.put(executingProfession, taskListProvider);
 	}
 	
-	/**
-	 * Implementation only. Do not use.
-	 */
+	
 	protected static ImmutableMap.Builder<VillagerProfession, VillagerTaskProvider> getCompletedMap()
 	{
 		return VILLAGER_TASK_PROVIDER_BUILDER;

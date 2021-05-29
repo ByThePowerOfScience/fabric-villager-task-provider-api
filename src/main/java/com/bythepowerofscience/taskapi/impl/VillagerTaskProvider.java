@@ -1,8 +1,6 @@
 package com.bythepowerofscience.taskapi.impl;
 
 import com.bythepowerofscience.taskapi.api.VillagerTaskProviderRegistry;
-import com.bythepowerofscience.taskapi.example.BoneMealTask;
-import com.bythepowerofscience.taskapi.example.FarmerVillagerTask;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
  * Provides task lists for villager professions. Called when initializing a {@code VillagerEntity}'s {@link net.minecraft.entity.ai.brain.Brain}. Must be registered with {@link VillagerTaskProviderRegistry#addTaskProvider} before it can be called.
  * @apiNote All custom tasks are appended onto the universal tasks, which are stored in {@link Base}.
  * @see VillagerTaskListProvider Vanilla Reference
- * @see WorkerVillagerTask Example Task
  * @see Task Task&lt;VillagerEntity&gt;
  */
 @SuppressWarnings({"ALL"})
@@ -38,7 +35,7 @@ public class VillagerTaskProvider {
 	
 	/**
 	 * A helper class for building custom {@code VillagerTaskProvider}s, allowing the addition of tasks without requiring one to provide a full subclass implementation.
-	 * @apiNote Implementations that affect multiple types of task may prefer to subclass {@link VillagerTaskProvider} for optimizational purposes, as initializing large dynamic task-lists requires more time.
+	 * @apiNote Implementations that affect multiple types of task may prefer to subclass {@link VillagerTaskProvider} for optimization purposes, as initializing large dynamic task-lists requires more time.
 	 */
 	public static final class Builder
 	{
