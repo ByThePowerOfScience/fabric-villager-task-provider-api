@@ -18,7 +18,7 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": []
+    "main": ["com.bythepowerofscience.taskapi.Test"]
   },
   "mixins": [
     "taskapi.mixins.json"

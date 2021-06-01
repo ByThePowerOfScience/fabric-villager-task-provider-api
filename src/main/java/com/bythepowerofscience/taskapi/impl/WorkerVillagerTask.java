@@ -12,19 +12,20 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.GameRules;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 /**
  * A helper class for creating simple world-affecting {@code VillagerTask}s, including pre-made functions for scanning for targets, etc.
- * @apiNote Tasks may also extend {@code Task&lt;VillagerEntity&gt;}.
+ * @apiNote Tasks may also extend {@code Task<VillagerEntity>}.
  * @see net.minecraft.entity.ai.brain.task.FarmerVillagerTask
  * @see net.minecraft.entity.ai.brain.task.BoneMealTask
  * @see Task
+ * @see com.bythepowerofscience.taskapi.api.VillagerTaskProviderRegistry
  */
 public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     @Nullable
@@ -90,7 +91,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * Example: {@link FarmerVillagerTask} needs to break crops to harvest them, so its implementation would return {@code true}.<p>
      * @return true or false.
      */
-    protected abstract boolean deactivateIfMobGriefingDisabled();
+    protected abstract boolean doesMobGriefing();
     
     
     /**
@@ -107,6 +108,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     /**
 	 * @return The duration, in game ticks, that the task should run for.
 	 */
+    @Contract(pure=true)
     protected abstract int getDuration();
     
     
@@ -121,7 +123,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      */
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        if ((deactivateIfMobGriefingDisabled() && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))
+        if ((doesMobGriefing() && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))
                 || !checkRunConditions(serverWorld, villagerEntity))
             return false;
         else {

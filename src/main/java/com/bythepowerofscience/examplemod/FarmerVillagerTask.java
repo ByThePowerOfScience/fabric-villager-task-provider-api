@@ -1,4 +1,4 @@
-package com.bythepowerofscience.examplemod.example;
+package com.bythepowerofscience.examplemod;
 
 import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
 import net.minecraft.block.*;
@@ -12,10 +12,13 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * @see net.minecraft.entity.ai.brain.task.FarmerVillagerTask
+ */
 public class FarmerVillagerTask extends WorkerVillagerTask {
     
     @Override
-    protected boolean deactivateIfMobGriefingDisabled() {
+    protected boolean doesMobGriefing() {
         return true;
     }
     

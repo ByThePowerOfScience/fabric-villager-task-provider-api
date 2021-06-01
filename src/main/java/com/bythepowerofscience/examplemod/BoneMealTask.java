@@ -1,4 +1,4 @@
-package com.bythepowerofscience.examplemod.example;
+package com.bythepowerofscience.examplemod;
 
 import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
 import net.minecraft.block.Block;
@@ -33,7 +33,7 @@ public class BoneMealTask extends WorkerVillagerTask {
     }
     
     @Override
-    protected boolean deactivateIfMobGriefingDisabled() {
+    protected boolean doesMobGriefing() {
         return false;
     }
     
