@@ -26,12 +26,14 @@ public class BackendVillagerTaskRetriever {
 	}
 	
 	static {
+		System.out.println("Map has been finalized");
 		villagerTaskProviderMap = VillagerTaskProviderRegistry.getCompletedMap().build();
 	}
 	
 	
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getCoreTasks(VillagerProfession profession, float f) {
+	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getCoreTasks(VillagerProfession profession, float f) 
+	{
 		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
 		b.addAll(VillagerTaskProvider.Base.getCoreTasks(profession, f));
 		
