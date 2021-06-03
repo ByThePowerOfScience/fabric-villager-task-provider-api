@@ -26,7 +26,6 @@ public class BackendVillagerTaskRetriever {
 	}
 	
 	static {
-		System.out.println("Map has been finalized");
 		villagerTaskProviderMap = VillagerTaskProviderRegistry.getCompletedMap().build();
 	}
 	
