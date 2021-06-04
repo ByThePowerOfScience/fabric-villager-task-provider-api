@@ -1,4 +1,4 @@
-package com.bythepowerofscience.examplemod;
+package com.bythepowerofscience.examplemod.farmertasks;
 
 import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
 import net.minecraft.block.*;

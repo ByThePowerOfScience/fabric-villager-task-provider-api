@@ -4,11 +4,14 @@ import com.bythepowerofscience.taskapi.impl.VillagerTaskProvider;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.VillagerTaskListProvider;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.VillagerProfession;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
+
+import static com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType.PLAY;
 
 public class BackendVillagerTaskRetriever {
 	
@@ -18,129 +21,88 @@ public class BackendVillagerTaskRetriever {
 	
 	private static VillagerTaskProvider getTaskProvider(VillagerProfession profession)
 	{
-		VillagerTaskProvider p = villagerTaskProviderMap.get(profession);
-		if (p == null)
+		assert(profession != null);
+		
+		if (profession == VillagerProfession.NONE)
+			return defaultTaskProvider;
+		
+		final VillagerTaskProvider vtp = villagerTaskProviderMap.get(profession);
+		if (vtp == null)
 			return defaultTaskProvider;
 		else
-			return p;
+			return vtp;
 	}
 	
 	static {
-		villagerTaskProviderMap = VillagerTaskProviderRegistry.getCompletedMap().build();
+		villagerTaskProviderMap = VillagerTaskProviderRegistry.getCompletedMap();
 	}
 	
 	
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getCoreTasks(VillagerProfession profession, float f) 
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getConstantTasks(VillagerTaskProvider.TaskType taskType, @Nullable VillagerProfession profession, float f)
 	{
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getCoreTasks(profession, f));
+		assert(!(profession == null && taskType != PLAY)); // The only hardcoding in this whole thing, because PLAY is an outlier.
 		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomCoreTasks(profession, f);
+		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> out = ImmutableList.builder();
 		
-		if (l != null)
-			b.addAll(l);
+		out.addAll(getVanillaTasks(taskType, profession, f));
 		
-		return b.build();
+		out.addAll(VillagerTaskProvider.getBaseConstantTasks(taskType, profession, f));
+		
+		if (!(profession == VillagerProfession.NONE || taskType == PLAY))
+			out.addAll(getTaskProvider(profession).getConstantTasks(taskType, profession, f));
+		
+		return out.build();
 	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getWorkTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getWorkTasks(profession, f));
-		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomWorkTasks(profession, f);
-		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
+	private static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getVanillaTasks(VillagerTaskProvider.TaskType taskType, VillagerProfession p, float f)
+	{
+		switch (taskType)
+		{
+			case CORE:
+				return VillagerTaskListProvider.createCoreTasks(p, f);
+			case WORK:
+				return VillagerTaskListProvider.createWorkTasks(p, f);
+			case PLAY:
+				return VillagerTaskListProvider.createPlayTasks(f);
+			case MEET:
+				return VillagerTaskListProvider.createMeetTasks(p, f);
+			case IDLE:
+				return VillagerTaskListProvider.createIdleTasks(p, f);
+			case PANIC:
+				return VillagerTaskListProvider.createPanicTasks(p, f);
+			case PRERAID:
+				return VillagerTaskListProvider.createPreRaidTasks(p, f);
+			case RAID:
+				return VillagerTaskListProvider.createRaidTasks(p, f);
+			case HIDE:
+				return VillagerTaskListProvider.createHideTasks(p, f);
+			case REST:
+				return VillagerTaskListProvider.createRestTasks(p, f);
+			default:
+				throw new AssertionError("Invalid VillagerTaskProvider.TaskType provided: " + taskType);
+		}
 	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getMeetTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getMeetTasks(profession, f));
+	
+	
+	// These are injected directly into the random task list, so there's no need to worry about switch cases.
+	public static ImmutableList<Pair<Task<? super VillagerEntity>, Integer>> getRandomTasks(VillagerTaskProvider.TaskType taskType, @Nullable VillagerProfession p, float f)
+	{
+		ImmutableList.Builder<Pair<Task<? super VillagerEntity>, Integer>> out = ImmutableList.builder();
+		out.addAll(VillagerTaskProvider.getBaseRandomTasks(taskType, p, f));
 		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomMeetTasks(profession, f);
+		if (taskType != PLAY) 
+			out.addAll(getTaskProvider(p).getRandomTasks(taskType, p, f));
 		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
+		return out.build();
 	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getRestTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getRestTasks(profession, f));
-		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomRestTasks(profession, f);
-		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
-	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getIdleTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getIdleTasks(profession, f));
-		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomIdleTasks(profession, f);
-		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
-	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getPanicTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getPanicTasks(profession, f));
-		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomPanicTasks(profession, f);
-		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
-	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getPreRaidTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getPreRaidTasks(profession, f));
-		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomPreRaidTasks(profession, f);
-		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
-	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getRaidTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getRaidTasks(profession, f));
-		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomRaidTasks(profession, f);
-		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
-	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getHideTasks(VillagerProfession profession, float f) {
-		ImmutableList.Builder<Pair<Integer,? extends Task<? super VillagerEntity>>> b = ImmutableList.builder();
-		b.addAll(VillagerTaskProvider.Base.getHideTasks(profession, f));
-		
-		List<Pair<Integer,? extends Task<? super VillagerEntity>>> l = getTaskProvider(profession).getCustomHideTasks(profession, f);
-		
-		if (l != null)
-			b.addAll(l);
-		
-		return b.build();
-	}
 	
-	public static ImmutableList<Pair<Integer,? extends Task<? super VillagerEntity>>> getPlayTasks(float f) {
-		return ImmutableList.copyOf(VillagerTaskProvider.Base.getPlayTasks(f));
-	}
+	
 }

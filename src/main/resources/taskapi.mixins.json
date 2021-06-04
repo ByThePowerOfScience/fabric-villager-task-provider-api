@@ -4,7 +4,8 @@
   "package": "com.bythepowerofscience.taskapi.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "VillagerEntityTaskMixin"
+    "VillagerEntityTaskMixin",
+    "VillagerTaskListProviderMixin"
   ],
   "client": [],
   "server": [],

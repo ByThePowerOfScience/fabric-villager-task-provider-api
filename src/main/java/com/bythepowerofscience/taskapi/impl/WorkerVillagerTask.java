@@ -114,7 +114,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     
     /**
      * Checks if this task should be executed by the villager who randomly chose it.
-     * @apiNote Developers using this method should avoid overriding this method, instead using {@link WorkerVillagerTask#checkRunConditions}.
+     * @apiNote Should avoid overriding this method, instead using {@link WorkerVillagerTask#checkRunConditions}.
      * @see Task#shouldRun
      * @param serverWorld The {@code ServerWorld} this task is being executed in.
      * @param villagerEntity The {@code VillagerEntity} attempting to execute the task.
