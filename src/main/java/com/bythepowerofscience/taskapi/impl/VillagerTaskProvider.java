@@ -34,39 +34,6 @@ public final class VillagerTaskProvider {
 	private final EnumMap<TaskType, List<BiFunction<VillagerProfession, Float, Pair<Task<? super VillagerEntity>, Integer>>>> randomTaskMap;
 	
 	
-	
-//	/**
-//	 * Adds a <b>Constant</b> task under the specified {@link TaskType} for any {@link VillagerProfession VillagerProfession} using this {@code VillagerTaskProvider}.
-//	 * <p><i>Constant</i> tasks are priorities given to a {@code LivingEntity} which are constantly assessed, whereas <i>Random</i> tasks are selected during the {@code Entity's} lifetime.
-//	 * <p>Example Usage: <blockquote><pre>addConstantTask(TaskType.CORE, Pair.of(1, new FarmerVillagerTask()));</pre></blockquote>
-//	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseConstantTask(TaskType, Pair) addBaseConstantTask}.
-//	 * @see #addRandomTask(TaskType, Pair) addRandomTask
-//	 * @see #addBaseConstantTask(TaskType, Pair) addBaseConstantTask
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param task A {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	public void addConstantTask(TaskType taskType, Pair<Integer, ? extends Task<? super VillagerEntity>> task)
-//	{
-//		addConstantTask(taskType, (p, f) -> task);
-//	}
-//	
-//	/**
-//	 * Adds a <b>Constant</b> task under the specified {@link TaskType} for any {@link VillagerProfession VillagerProfession} using this {@code VillagerTaskProvider}.
-//	 * <p><i>Constant</i> tasks are priorities given to a {@code LivingEntity} which are constantly assessed, whereas <i>Random</i> tasks are selected during the {@code Entity's} lifetime.
-//	 * <p>Example Usage: <blockquote><pre>addConstantTask(TaskType.CORE, Pair.of(1, new FarmerVillagerTask()));</pre></blockquote>
-//	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseConstantTasks(TaskType, Pair[]) addBaseConstantTask}.
-//	 * @see #addRandomTasks(TaskType, Pair[]) addRandomTasks
-//	 * @see #addBaseConstantTasks(TaskType, Pair[]) addBaseConstantTasks
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param tasks A {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	@SafeVarargs
-//	public final void addConstantTasks(TaskType taskType, Pair<Integer, ? extends Task<? super VillagerEntity>>... tasks)
-//	{
-//		addConstantTasks(taskType, mapToBiFunction(tasks));
-//	}
-	
-	
 	/**
 	 * Adds a <b>Constant</b> task under the specified {@link TaskType} for any {@link VillagerProfession VillagerProfession} using this {@code VillagerTaskProvider}.
 	 * <p><i>Constant</i> tasks are priorities given to a {@code LivingEntity} which are constantly assessed, whereas <i>Random</i> tasks are selected during the {@code Entity's} lifetime.
@@ -116,7 +83,8 @@ public final class VillagerTaskProvider {
 	/**
 	 * Adds a <b>Constant</b> task under the specified {@link TaskType} for any {@link VillagerProfession} using this {@code VillagerTaskProvider}.
 	 * <p><i>Constant</i> tasks are priorities given to a {@code LivingEntity} which are constantly assessed, whereas <i>Random</i> tasks are selected during the {@code Entity's} lifetime.
-	 * <p>Example Usage: <blockquote><pre>addConstantTasks(TaskType.CORE, (profession, f) -&gt; Pair.of(1, new VillagerTask(profession, f)));</pre></blockquote>
+	 * <p>Example Usage: 
+	 * <blockquote><pre>addConstantTasks(TaskType.CORE, (profession, f) -&gt; Pair.of(1, new VillagerTask(profession, f)));</pre></blockquote>
 	 * @see #addRandomTasks(TaskType, BiFunction[]) addRandomTasks
 	 * @see #addBaseConstantTasks(TaskType, BiFunction[]) addBaseConstantTasks
 	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseConstantTasks(TaskType, BiFunction[]) addBaseConstantTasks}.
@@ -142,57 +110,13 @@ public final class VillagerTaskProvider {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-//	/**
-//	 * Adds a <b>Random</b> task under the specified {@link TaskType} for any {@link VillagerProfession VillagerProfession} using this {@code VillagerTaskProvider}.
-//	 * <p><i>Random</i> tasks are randomly selected and executed during the Villager's lifetime, whereas <i>Constant</i> tasks are priorities that are always active.
-//	 * <p>Example Usage:
-//	 * <blockquote><pre>addRandomTask(TaskType.CORE, Pair.of(new FarmerVillagerTask(), 1));</pre></blockquote>
-//	 * @see #addConstantTask(TaskType, Pair) addConstantTask
-//	 * @see #addBaseRandomTask(TaskType, Pair) addBaseRandomTask
-//	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseRandomTask(TaskType, Pair) addBaseRandomTask}.
-//	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param task {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	public final void addRandomTask(TaskType taskType, Pair<Task<? super VillagerEntity>, Integer> task)
-//	{
-//		addRandomTask(taskType, (profession, f) -> task);
-//	}
-//	
-//	/**
-//	 * Adds a <b>Random</b> task under the specified {@link TaskType} for any {@link VillagerProfession VillagerProfession} using this {@code VillagerTaskProvider}.
-//	 * <p><i>Random</i> tasks are randomly selected and executed during the Villager's lifetime, whereas <i>Constant</i> tasks are priorities that are always active.
-//	 * <p>Example Usage:
-//	 * <blockquote><pre>addRandomTasks(TaskType.CORE, Pair.of(new FarmerVillagerTask(), 1));</pre></blockquote>
-//	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseRandomTasks(TaskType, Pair[]) addBaseRandomTasks}.
-//	 * @see #addConstantTasks(TaskType, Pair[]) addConstantTasks
-//	 * @see #addBaseRandomTasks(TaskType, Pair[]) addBaseRandomTasks
-//	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param tasks {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	@SafeVarargs
-//	public final void addRandomTasks(TaskType taskType, Pair<Task<? super VillagerEntity>, Integer>... tasks)
-//	{
-//		
-//		addRandomTasks(taskType, mapToBiFunction(tasks));
-//	}
-	
-	
 	/**
 	 * Adds a <b>Random</b> task under the specified {@link TaskType} for any {@link VillagerProfession VillagerProfession} using this {@code VillagerTaskProvider}.
 	 * <p><i>Random</i> tasks are randomly selected and executed during the Villager's lifetime, whereas <i>Constant</i> tasks are priorities that are always active.
 	 * <p>Example Usage:
 	 * <blockquote><pre>addRandomTask(TaskType.CORE, (profession, f) -&gt; Pair.of(new VillagerTask(profession, f), 1));</pre></blockquote>
 	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseConstantTask(TaskType, BiFunction) addBaseConstantTask}.
-	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 	 * @see #addConstantTask(TaskType, BiFunction) addConstantTask
 	 * @see #addBaseRandomTask(TaskType, BiFunction) addBaseRandomTask
 	 * @implSpec {@code BiFunction}s must return a {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
@@ -221,7 +145,7 @@ public final class VillagerTaskProvider {
 	 * <p>Example Usage:
 	 * <blockquote><pre>addRandomTasks(TaskType.CORE, (profession, f) -&gt; Pair.of(new VillagerTask(profession, f), 1));</pre></blockquote>
 	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseRandomTasks(TaskType, BiFunction[]) addBaseRandomTasks}.
-	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 	 * @see #addConstantTasks(TaskType, BiFunction[]) addConstantTasks
 	 * @see #addBaseRandomTasks(TaskType, BiFunction[]) addBaseRandomTasks
 	 * @implSpec {@code BiFunction}s must return a {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
@@ -241,7 +165,7 @@ public final class VillagerTaskProvider {
 	 * <p>Example Usage:
 	 * <blockquote><pre>addRandomTasks(TaskType.CORE, (profession, f) -&gt; Pair.of(new VillagerTask(profession, f), 1));</pre></blockquote>
 	 * @apiNote {@code PLAY} tasks may only be modified in {@code base} tasks. All calls to this method with {@code TaskType.PLAY} will be redirected to {@link #addBaseRandomTasks(TaskType, BiFunction[]) addBaseRandomTasks}.
-	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 	 * @see #addConstantTasks(TaskType, List) addConstantTasks
 	 * @see #addBaseRandomTasks(TaskType, List) addBaseRandomTasks
 	 * @implSpec {@code BiFunction}s must return a {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
@@ -418,7 +342,7 @@ public final class VillagerTaskProvider {
 //	 * @see #addBaseConstantTask(TaskType, Pair) addBaseConstantTask
 //	 * @see #addRandomTask(TaskType, Pair) addRandomTask
 //	 * @apiNote {@code PLAY} tasks may only be modified here.
-//	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+//	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 //	 * @param taskType The {@code TaskType} of the specified task.
 //	 * @param task {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
 //	 */
@@ -437,7 +361,7 @@ public final class VillagerTaskProvider {
 //	 * @apiNote {@code PLAY} tasks may only be modified here.
 //	 * @see #addBaseConstantTasks(TaskType, Pair[]) addBaseConstantTasks
 //	 * @see #addRandomTasks(TaskType, Pair[]) addRandomTasks
-//	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+//	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 //	 * @param taskType The {@code TaskType} of the specified task.
 //	 * @param tasks {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
 //	 */
@@ -457,7 +381,7 @@ public final class VillagerTaskProvider {
 	 * <p>Example Usage:
 	 * <blockquote><pre>addBaseRandomTask(TaskType.CORE, (profession, f) -&gt; Pair.of(new VillagerTask(profession, f), 1));</pre></blockquote>
 	 * @apiNote {@code PLAY} tasks may only be modified here.
-	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 	 * @see #addBaseConstantTask(TaskType, BiFunction) addBaseConstantTask
 	 * @see #addRandomTask(TaskType, BiFunction) addRandomTask
 	 * @implSpec {@code BiFunction}s must return a {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
@@ -488,7 +412,7 @@ public final class VillagerTaskProvider {
 	 * <p>Example Usage:
 	 * <blockquote><pre>addBaseRandomTasks(TaskType.CORE, (profession, f) -&gt; Pair.of(new VillagerTask(profession, f), 1));</pre></blockquote>
 	 * @apiNote {@code PLAY} tasks may only be modified here.
-	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 	 * @see #addBaseConstantTasks(TaskType, BiFunction[]) addBaseConstantTasks
 	 * @see #addRandomTasks(TaskType, BiFunction[]) addRandomTask
 	 * @implSpec {@code BiFunction}s must return a {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
@@ -507,7 +431,7 @@ public final class VillagerTaskProvider {
 	 * <p>Example Usage:
 	 * <blockquote><pre>addBaseRandomTasks(TaskType.CORE, (profession, f) -&gt; Pair.of(new VillagerTask(profession, f), 1));</pre></blockquote>
 	 * @apiNote {@code PLAY} tasks may only be modified here.
-	 * @implNote {@code Task}s are added to a {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
+	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
 	 * @see #addBaseConstantTasks(TaskType, BiFunction[]) addBaseConstantTasks
 	 * @see #addRandomTasks(TaskType, BiFunction[]) addRandomTask
 	 * @implSpec {@code BiFunction}s must return a {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
@@ -682,7 +606,7 @@ public final class VillagerTaskProvider {
 		CORE,
 		
 		/**
-		 * {@code WORK} tasks are executed when a {@code VillagerEntity} enters its "work" phase during the day.
+		 * {@code WORK} tasks are executed when a {@code VillagerProfession} is near its secondary worksite.
 		 * <p>Includes tasks such as:
 		 * <ul>
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.FarmerVillagerTask Farmer breaking crops},</li>
@@ -696,7 +620,7 @@ public final class VillagerTaskProvider {
 		WORK,
 		
 		/**
-		 * {@code REST} tasks are executed when night falls. Exact timing currently unknown.
+		 * {@code REST} tasks are executed as nighttime begins.
 		 * <p>Includes tasks such as:
 		 * <ul>
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.VillagerWalkTowardsTask Go home},</li>
@@ -709,7 +633,7 @@ public final class VillagerTaskProvider {
 		REST,
 		
 		/**
-		 * {@code MEET} tasks are executed when villagers interact with other entities.
+		 * {@code MEET} tasks are executed at midday, when all villagers gather in the center of their village.
 		 * <p>Includes tasks such as:
 		 * <ul>
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.FindInteractionTargetTask Interact with player},</li>
@@ -783,7 +707,7 @@ public final class VillagerTaskProvider {
 		
 		
 		/**
-		 * {@code PLAY} tasks are executed by "baby" Villagers when {@code WORK} tasks would otherwise be generated.
+		 * {@code PLAY} tasks are executed by "baby" Villagers.
 		 * <p>Includes tasks such as:
 		 * <ul>
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.JumpInBedTask Jump in bed},</li>

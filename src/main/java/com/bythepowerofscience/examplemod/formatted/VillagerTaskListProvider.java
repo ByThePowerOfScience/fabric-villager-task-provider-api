@@ -28,10 +28,10 @@ import java.util.function.Predicate;
 /**
  * Copied from vanilla class and formatted for ease of reading.
  * <p>Not for use; exists solely for reference.
- * @see net.minecraft.entity.ai.brain.task.VillagerTaskListProvider
+ * @see net.minecraft.entity.ai.brain.task.VillagerTaskListProvider VillagerTaskListProvider
  */
 @SuppressWarnings({"ALL"})
-class VillagerTaskListProvider {
+public class VillagerTaskListProvider {
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float f) {
 		return ImmutableList.of(
 				Pair.of(0, new StayAboveWaterTask(0.8F)),
