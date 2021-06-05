@@ -14,6 +14,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.GameRules;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +42,10 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
                 MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT,
                 MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT,
                 MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
+        LogManager.getLogger().log(Level.INFO, "Task initialized");
     }
     
+    @SuppressWarnings("unused")
     public WorkerVillagerTask(ImmutableMap<MemoryModuleType<?>, MemoryModuleState> memoryMap)
     {
         super(memoryMap);
@@ -66,8 +70,9 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * 
      * @param pos The position of the block in the world.
      * @param world The serverworld in which the block exists.
-     * @return true if the block at that position satisfies the requirements to be interacted with.
+     * @return {@code true} if the block at that position satisfies the requirements to be interacted with.
      */
+    @Contract(pure=true)
     protected abstract boolean isSuitableTarget(BlockPos pos, ServerWorld world);
 
     /**
@@ -82,26 +87,29 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * @param villagerEntity the {@link VillagerEntity} currently attempting to execute this task.
      * @return {@code true} if this task should run with the given environment.
      */
+    @Contract(pure=true)
     protected abstract boolean checkRunConditions(ServerWorld serverWorld, VillagerEntity villagerEntity);
     
     /**
-     * If this task should run only when {@code doMobGriefing} is enabled.<p>
-     * Generally necessary for any tasks that break blocks, but not necessary if they only <i>modify</i> blocks.<p>
+     * If this task should run only if the {@code doMobGriefing} game-rule is enabled.<p>
+     * Generally necessary for any tasks that break blocks, but not required if they only modify {@code BlockState}s.<p>
      * 
      * Example: {@link FarmerVillagerTask} needs to break crops to harvest them, so its implementation would return {@code true}.<p>
-     * @return true or false.
+     * @return {@code true} or {@code false}.
      */
+    @Contract(pure=true)
     protected abstract boolean doesMobGriefing();
     
     
     /**
-     * The world action to be performed on the currently-targeted block position.<p>
-     *
+     * The world action to be performed on the currently-targeted block position.
+     * 
      * @param currentTarget The {@link BlockPos} of the currently-targeted block.
      * @param serverWorld The {@link ServerWorld} the block is located in.
      * @param villagerEntity The {@link VillagerEntity} acting upon this block.
-     * @param startTick The game tick that the task started on.
+     * @param startTick The game tick that the task began.
      */
+    @Contract(mutates="param2")
     protected abstract void doWorldActions(BlockPos currentTarget, ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick);
     
     
@@ -121,6 +129,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * @return {@code true} if this task should run.
      * @implNote Implementations of this method should also set the current target via side-effect.
      */
+    @Contract(mutates="this, param1")
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         if ((doesMobGriefing() && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))
@@ -138,6 +147,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * @param serverWorld The {@code ServerWorld} this task is being executed in.
      * @param villagerEntity The {@code VillagerEntity} currently executing this task.
      */
+    @Contract(mutates="this")
     protected void setCurrentTarget(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         this.targetPositions.clear();
         
@@ -165,8 +175,8 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     }
     
     /**
-     * The mechanism for saving potential {@link BlockPos} target positions
-     * @implNote The only reason to override this method is to use a {@code Collections.singletonList()} implementation instead, as with {@link net.minecraft.entity.ai.brain.task.BoneMealTask}.
+     * The mechanism for saving potential {@link BlockPos} target positions.
+     * @implNote The only reason to override this method is to use an alternative storage method, as with {@link net.minecraft.entity.ai.brain.task.BoneMealTask BoneMealTask}.
      * @param pos The potential target position.
      */
     protected void addPotentialTarget(BlockPos pos) {
@@ -178,6 +188,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * @param world The server world being scanned.
      * @return The {@link BlockPos} that should be chosen as a target.
      */
+    @Contract(pure=true)
     @Nullable
     protected BlockPos chooseRandomTarget(ServerWorld world) {
         if (this.targetPositions.isEmpty())
@@ -187,7 +198,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     }
     
     
-    
+    @Contract(mutates="this, param1, param2")
     @Override
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick) {
         if (startTick > this.nextResponseTime && this.currentTarget != null) {
@@ -195,13 +206,28 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
         }
     }
     
-    
+    @Contract(mutates="this, param1, param2")
     @Override
     protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick) {
-        villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
-        villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
+        forgetLookWalkTarget(villagerEntity);
         this.ticksRan = 0;
         this.nextResponseTime = startTick + getEndDelay();
+    }
+    
+    
+    @Contract(mutates="param1")
+    protected void addLookWalkTarget(final VillagerEntity villagerEntity, final BlockPos target)
+    {
+        final BlockPosLookTarget lookTarget = new BlockPosLookTarget(target);
+        villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, (new WalkTarget(lookTarget, 0.5F, 1)));
+        villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, (lookTarget));
+    }
+    
+    @Contract(mutates="param")
+    protected void forgetLookWalkTarget(VillagerEntity villagerEntity)
+    {
+        villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
+        villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
     }
 	
 	
@@ -212,6 +238,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * @param villagerEntity The {@code VillagerEntity} executing this task.
      * @param startTick The game tick the task was started on.
      */
+	@Contract(mutates="this, param1")
     @Override
     protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick) {
         if (this.currentTarget == null || this.currentTarget.isWithinDistance(villagerEntity.getPos(), 1.0D)) {
@@ -227,6 +254,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * 
      * @return the number of game ticks before the next random target should be chosen.
      */
+    @Contract(pure=true)
     protected long getEndDelay()
     {
         return 40L;
@@ -235,8 +263,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     
     
     
-    
-
+    @Contract(pure=true)
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return this.ticksRan < getDuration();
@@ -245,11 +272,5 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     
     
     
-    protected void addLookWalkTarget(final VillagerEntity villagerEntity, final BlockPos target)
-    {
-        final BlockPosLookTarget lookTarget = new BlockPosLookTarget(target);
-        villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, (new WalkTarget(lookTarget, 0.5F, 1)));
-        villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, (lookTarget));
-    }
 }
 

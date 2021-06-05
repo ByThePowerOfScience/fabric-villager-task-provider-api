@@ -500,6 +500,7 @@ public final class VillagerTaskProvider {
 	{
 		addBaseRandomTasks(taskType, toListCheckNull(dynamicTasks));
 	}
+	
 	/**
 	 * Adds a <b>Random</b> task under the specified {@link TaskType} for <i>all</i> {@link VillagerEntity VillagerEntities}, regardless of {@link VillagerProfession}.
 	 * <p><i>Random</i> tasks are randomly selected and executed during the Villager's lifetime, whereas <i>Constant</i> tasks are priorities that are always active.
@@ -552,6 +553,25 @@ public final class VillagerTaskProvider {
 	
 	
 	
+	public boolean hasRandomTasks(@NotNull TaskType taskType)
+	{
+		return randomTaskMap.containsKey(taskType);
+	}
+	
+	public boolean hasConstantTasks(@NotNull TaskType taskType)
+	{
+		return constantTaskMap.containsKey(taskType);
+	}
+	
+	public static boolean hasBaseConstantTasks(@NotNull TaskType taskType)
+	{
+		return baseConstantTaskMap.containsKey(taskType);
+	}
+	
+	public static boolean hasBaseRandomTasks(@NotNull TaskType taskType)
+	{
+		return baseRandomTaskMap.containsKey(taskType);
+	}
 	
 	public List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> getRawConstantTasks(TaskType taskType)
 	{
