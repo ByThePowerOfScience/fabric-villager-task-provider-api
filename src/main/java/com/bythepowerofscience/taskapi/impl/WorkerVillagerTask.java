@@ -56,13 +56,13 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      *      <li>For planting: if the targeted block is air and the block below it is farmland.</li>
      * </ol>
      * Thus, the Farmer's implementation of this method would be as follows:
-     * <pre>protected boolean isSuitableTarget(BlockPos pos, ServerWorld world) {
+     * <blockquote><pre>protected boolean isSuitableTarget(BlockPos pos, ServerWorld world) {
      *      BlockState blockState = world.getBlockState(pos);
      *      Block block = blockState.getBlock();
      *      Block block2 = world.getBlockState(pos.down()).getBlock();
      *      return (block instanceof CropBlock) &amp;&amp; ((CropBlock)block).isMature(blockState)
      *             || (blockState.isAir() &amp;&amp; block2 instanceof FarmlandBlock);
-     * }</pre>
+     * }</pre></blockquote>
      * 
      * @param pos The position of the block in the world.
      * @param world The serverworld in which the block exists.
@@ -157,7 +157,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
                     mutable.set(villagerEntity.getBlockPos(), i, j, k);
                     
                     if (this.isSuitableTarget(mutable, serverWorld)) 
-                        addPotentialTarget(mutable);
+                        addPotentialTarget(mutable.toImmutable());
                     
                 }
             }

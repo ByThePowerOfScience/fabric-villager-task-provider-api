@@ -49,7 +49,7 @@ public class BackendVillagerTaskRetriever {
 		
 		out.addAll(VillagerTaskProvider.getBaseConstantTasks(taskType, profession, f));
 		
-		if (!(profession == VillagerProfession.NONE || taskType == PLAY))
+		if (profession != VillagerProfession.NONE && taskType != PLAY)
 			out.addAll(getTaskProvider(profession).getConstantTasks(taskType, profession, f));
 		
 		return out.build();
