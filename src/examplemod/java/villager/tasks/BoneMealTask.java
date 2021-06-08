@@ -1,6 +1,6 @@
-package com.bythepowerofscience.examplemod.farmertasks;
+package villager.tasks;
 
-import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
+import com.bythepowerofscience.taskapi.api.WorkerVillagerTask;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
@@ -12,10 +12,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 
 import java.util.Collections;
 
+/**
+ * @see net.minecraft.entity.ai.brain.task.BoneMealTask BoneMealTask
+ */
 public class BoneMealTask extends WorkerVillagerTask {
     
     private long lastEndEntityAge;
@@ -91,7 +93,7 @@ public class BoneMealTask extends WorkerVillagerTask {
             for(int k = -1; k <= 1; ++k) {
                 for(int l = -1; l <= 1; ++l, ++i) 
                 {
-                    mutable.set((Vec3i)entity.getBlockPos(), j, k, l);
+                    mutable.set(entity.getBlockPos(), j, k, l);
                     
                     if (this.isSuitableTarget(mutable, world)
                             && world.random.nextInt(i) == 0) {
@@ -115,6 +117,6 @@ public class BoneMealTask extends WorkerVillagerTask {
     protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick)
     {
         villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-        this.lastEndEntityAge = (long)villagerEntity.age;
+        this.lastEndEntityAge = villagerEntity.age;
     }
 }

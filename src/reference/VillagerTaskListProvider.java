@@ -3,8 +3,6 @@
 // (powered by FernFlower decompiler)
 //
 
-package com.bythepowerofscience.examplemod.formatted;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;

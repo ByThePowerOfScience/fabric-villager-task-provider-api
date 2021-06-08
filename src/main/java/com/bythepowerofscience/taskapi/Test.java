@@ -1,8 +1,8 @@
 package com.bythepowerofscience.taskapi;
 
 import com.bythepowerofscience.Constants;
-import com.bythepowerofscience.taskapi.impl.VillagerTaskProvider;
-import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
+import com.bythepowerofscience.taskapi.api.VillagerTaskProvider;
+import com.bythepowerofscience.taskapi.api.WorkerVillagerTask;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.block.FletchingTableBlock;
@@ -83,9 +83,7 @@ abstract class TestTask extends WorkerVillagerTask {
 	@Override
 	protected void doWorldActions(final BlockPos currentTarget, final ServerWorld serverWorld, final VillagerEntity villagerEntity, final long startTick)
 	{
-		targetPositions.forEach(target -> {
-			serverWorld.breakBlock(target, false);
-		});
+		targetPositions.forEach(target -> serverWorld.breakBlock(target, false));
 	}
 	
 	@Override

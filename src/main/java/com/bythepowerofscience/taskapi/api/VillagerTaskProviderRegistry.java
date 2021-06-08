@@ -1,6 +1,5 @@
 package com.bythepowerofscience.taskapi.api;
 
-import com.bythepowerofscience.taskapi.impl.VillagerTaskProvider;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -17,6 +16,11 @@ import java.util.function.BiFunction;
 public class VillagerTaskProviderRegistry {
 	private static final Map<VillagerProfession, VillagerTaskProvider> VILLAGER_TASK_PROVIDER_BUILDER = new HashMap<>();
 	
+	/**
+	 * Adds a {@link VillagerTaskProvider} to the registry, which will be called by the associated {@link VillagerProfession}.
+	 * @param executingProfession The {@code VillagerProfession} that will execute this {@code VillagerTaskProvider}.
+	 * @param taskListProvider The {@code VillagerTaskProvider} to register.
+	 */
 	public static void addTaskProvider(VillagerProfession executingProfession, VillagerTaskProvider taskListProvider)
 	{
 		assert(executingProfession != null || taskListProvider != null);
@@ -28,12 +32,22 @@ public class VillagerTaskProviderRegistry {
 			VILLAGER_TASK_PROVIDER_BUILDER.put(executingProfession, combineTaskLists(old, taskListProvider));
 	}
 	
-	protected static ImmutableMap<VillagerProfession, VillagerTaskProvider> getCompletedMap()
+	/**
+	 * Implementation retrieval method. Do not invoke.
+	 */
+	public static ImmutableMap<VillagerProfession, VillagerTaskProvider> getCompletedMap()
 	{
 		return ImmutableMap.copyOf(VILLAGER_TASK_PROVIDER_BUILDER);
 	}
 	
 	
+	/**
+	 * Helper function for combining {@link VillagerTaskProvider VillagerTaskProviders}.
+	 * TODO possibly make it use {@code Set} to exclude duplicate tasks?
+	 * @param a The first {@code VillagerTaskProvider}.
+	 * @param b The second {@code VillagerTaskProvider}.
+	 * @return A {@code VillagerTaskProvider} containing all tasks from both {@code a} and {@code b}.
+	 */
 	@Contract("_, _ -> new")
 	private static VillagerTaskProvider combineTaskLists(VillagerTaskProvider a, VillagerTaskProvider b)
 	{

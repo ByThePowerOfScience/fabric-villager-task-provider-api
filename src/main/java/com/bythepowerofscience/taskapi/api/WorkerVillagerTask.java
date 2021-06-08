@@ -1,4 +1,4 @@
-package com.bythepowerofscience.taskapi.impl;
+package com.bythepowerofscience.taskapi.api;
 
 
 import com.google.common.collect.ImmutableMap;
@@ -22,12 +22,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * A helper class for creating simple world-affecting {@code VillagerTask}s, including pre-made functions for scanning for targets, etc.
+ * A framework for creating simple world-affecting {@code VillagerTask}s, including pre-made functions for scanning for targets, etc.
  * @apiNote Tasks may also extend {@code Task<VillagerEntity>}.
- * @see net.minecraft.entity.ai.brain.task.FarmerVillagerTask
- * @see net.minecraft.entity.ai.brain.task.BoneMealTask
+ * @see net.minecraft.entity.ai.brain.task.FarmerVillagerTask FarmerVillagerTask
+ * @see net.minecraft.entity.ai.brain.task.BoneMealTask BoneMealTask
  * @see Task
- * @see com.bythepowerofscience.taskapi.api.VillagerTaskProviderRegistry
+ * @see VillagerTaskProviderRegistry
  */
 public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     @Nullable
@@ -103,13 +103,13 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
     
     /**
      * The world action to be performed on the currently-targeted block position.
-     * 
+     * <p>
      * @param currentTarget The {@link BlockPos} of the currently-targeted block.
      * @param serverWorld The {@link ServerWorld} the block is located in.
      * @param villagerEntity The {@link VillagerEntity} acting upon this block.
      * @param startTick The game tick that the task began.
      */
-    @Contract(mutates="param2")
+    @Contract(mutates="this, param2, param3")
     protected abstract void doWorldActions(BlockPos currentTarget, ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick);
     
     
@@ -197,7 +197,12 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
             return this.targetPositions.get(world.getRandom().nextInt(this.targetPositions.size()));
     }
     
-    
+    /**
+     * Called to execute the main task.
+     * @param serverWorld
+     * @param villagerEntity
+     * @param startTick
+     */
     @Contract(mutates="this, param1, param2")
     @Override
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick) {
@@ -206,6 +211,12 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
         }
     }
     
+    /**
+     * Called to finish up the current task.
+     * @param serverWorld
+     * @param villagerEntity
+     * @param startTick
+     */
     @Contract(mutates="this, param1, param2")
     @Override
     protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick) {
@@ -214,7 +225,11 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
         this.nextResponseTime = startTick + getEndDelay();
     }
     
-    
+    /**
+     * Adds look/walk target to the {@link VillagerEntity}'s {@link net.minecraft.entity.ai.brain.Brain Brain}.
+     * @param villagerEntity The {@code VillagerEntity} to add the look/walk target to.
+     * @param target The target {@code BlockPos}.
+     */
     @Contract(mutates="param1")
     protected void addLookWalkTarget(final VillagerEntity villagerEntity, final BlockPos target)
     {
@@ -223,6 +238,10 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
         villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, (lookTarget));
     }
     
+    /**
+     * Makes the {@code VillagerEntity} forget its Look Target and Walk Target.
+     * @param villagerEntity The {@code VillagerEntity} that will forget its look/walk target.
+     */
     @Contract(mutates="param")
     protected void forgetLookWalkTarget(VillagerEntity villagerEntity)
     {
@@ -238,7 +257,7 @@ public abstract class WorkerVillagerTask extends Task<VillagerEntity> {
      * @param villagerEntity The {@code VillagerEntity} executing this task.
      * @param startTick The game tick the task was started on.
      */
-	@Contract(mutates="this, param1")
+	@Contract(mutates="this, param1, param2")
     @Override
     protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long startTick) {
         if (this.currentTarget == null || this.currentTarget.isWithinDistance(villagerEntity.getPos(), 1.0D)) {

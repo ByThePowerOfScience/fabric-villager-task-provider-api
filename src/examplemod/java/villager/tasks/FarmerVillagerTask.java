@@ -1,9 +1,8 @@
-package com.bythepowerofscience.examplemod.farmertasks;
+package villager.tasks;
 
-import com.bythepowerofscience.taskapi.impl.WorkerVillagerTask;
+import com.bythepowerofscience.taskapi.api.WorkerVillagerTask;
 import net.minecraft.block.*;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,7 +12,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * @see net.minecraft.entity.ai.brain.task.FarmerVillagerTask
+ * @see net.minecraft.entity.ai.brain.task.FarmerVillagerTask FarmerVillagerTask
  */
 public class FarmerVillagerTask extends WorkerVillagerTask {
     
@@ -68,7 +67,7 @@ public class FarmerVillagerTask extends WorkerVillagerTask {
                 }
 
                 if (bl) {
-                    serverWorld.playSound((PlayerEntity)null, (double)this.currentTarget.getX(), (double)this.currentTarget.getY(), (double)this.currentTarget.getZ(), SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    serverWorld.playSound(null, this.currentTarget.getX(), this.currentTarget.getY(), this.currentTarget.getZ(), SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     itemStack.decrement(1);
                     if (itemStack.isEmpty()) {
                         simpleInventory.setStack(i, ItemStack.EMPTY);

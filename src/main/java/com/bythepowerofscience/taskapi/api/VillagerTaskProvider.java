@@ -1,6 +1,5 @@
-package com.bythepowerofscience.taskapi.impl;
+package com.bythepowerofscience.taskapi.api;
 
-import com.bythepowerofscience.taskapi.api.VillagerTaskProviderRegistry;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -19,10 +18,10 @@ import java.util.function.BiFunction;
 /**
  * Provides task lists for villager professions. Called when initializing a {@code VillagerEntity}'s {@link net.minecraft.entity.ai.brain.Brain Brain}. Must be registered with {@link VillagerTaskProviderRegistry#addTaskProvider} before it can be called.
  * @see VillagerTaskListProvider Vanilla Source
- * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider Formatted Reference
+ * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider Formatted Reference
  * @see Task Task&lt;VillagerEntity&gt;
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnstableApiUsage"})
 public final class VillagerTaskProvider {
 	public VillagerTaskProvider()
 	{
@@ -217,45 +216,6 @@ public final class VillagerTaskProvider {
 	private static final EnumMap<TaskType, List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>>> baseConstantTaskMap;
 	private static final EnumMap<TaskType, List<BiFunction<VillagerProfession, Float, Pair<Task<? super VillagerEntity>, Integer>>>> baseRandomTaskMap;
 	
-//	/**
-//	 * Adds a <b>Constant</b> task under the specified {@link TaskType} for <i>all</i> {@link VillagerEntity VillagerEntities}, regardless of {@link VillagerProfession}.
-//	 * <p><i>Constant</i> tasks are priorities given to a {@code LivingEntity} which are constantly assessed, whereas <i>Random</i> tasks are selected during the {@code Entity's} lifetime.
-//	 * <p>Example Usage: <blockquote><pre>addBaseConstantTask(TaskType.CORE, Pair.of(1, new FarmerVillagerTask()));</pre></blockquote>
-//	 * @apiNote {@code PLAY} tasks may only be modified in this method.
-//	 * @see #addConstantTask(TaskType, Pair) addConstantTask
-//	 * @see #addBaseRandomTask(TaskType, Pair) addBaseRandomTask
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param task A {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	public static void addBaseConstantTask(TaskType taskType, Pair<Integer, ? extends Task<? super VillagerEntity>> task)
-//	{
-//		addBaseConstantTask(taskType, (profession, f) -> task);
-//	}
-//	
-//	/**
-//	 * Adds a <b>Constant</b> task under the specified {@link TaskType} for <i>all</i> {@link VillagerEntity VillagerEntities}, regardless of {@link VillagerProfession}.
-//	 * <p><i>Constant</i> tasks are priorities given to a {@code LivingEntity} which are constantly assessed, whereas <i>Random</i> tasks are selected during the {@code Entity's} lifetime.
-//	 * <p>Example Usage: <blockquote><pre>addBaseConstantTasks(TaskType.CORE, Pair.of(1, new FarmerVillagerTask()));</pre></blockquote>
-//	 * @apiNote {@code PLAY} tasks may only be modified here.
-//	 * @see #addConstantTasks(TaskType, Pair[]) addConstantTasks
-//	 * @see #addBaseRandomTasks(TaskType, Pair[]) addBaseRandomTasks
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param tasks A {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	@SafeVarargs
-//	public static void addBaseConstantTasks(TaskType taskType, Pair<Integer, ? extends Task<? super VillagerEntity>>... tasks)
-//	{
-//		final List<BiFunction<VillagerProfession, Float, Pair<Integer, ? extends Task<? super VillagerEntity>>>> arg = mapToBiFunction(Arrays.<Pair<Integer, ? extends Task<? super VillagerEntity>>>asList(tasks));
-//		
-//		addBaseConstantTasks(taskType, arg);
-//	}
-	
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * Adds a <b>Constant</b> task under the specified {@link TaskType} for <i>all</i> {@link VillagerEntity VillagerEntities}, regardless of {@link VillagerProfession}.
@@ -324,55 +284,6 @@ public final class VillagerTaskProvider {
 		
 		baseConstantTaskMap.put(taskType, list);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//	/**
-//	 * Adds a <b>Random</b> task under the specified {@link TaskType} for <i>all</i> {@link VillagerEntity VillagerEntities}, regardless of {@link VillagerProfession}.
-//	 * <p><i>Random</i> tasks are randomly selected and executed during the Villager's lifetime, whereas <i>Constant</i> tasks are priorities that are always active.
-//	 * <p>Example Usage:
-//	 * <blockquote><pre>addBaseRandomTask(TaskType.CORE, Pair.of(new FarmerVillagerTask(), 1));</pre></blockquote>
-//	 * @see #addBaseConstantTask(TaskType, Pair) addBaseConstantTask
-//	 * @see #addRandomTask(TaskType, Pair) addRandomTask
-//	 * @apiNote {@code PLAY} tasks may only be modified here.
-//	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param task {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	public static void addBaseRandomTask(TaskType taskType, Pair<Task<? super VillagerEntity>, Integer> task)
-//	{
-//		addBaseRandomTask(taskType, (profession, f) -> task);
-//	}
-	
-	
-	
-//	/**
-//	 * Adds a <b>Random</b> task under the specified {@link TaskType} for <i>all</i> {@link VillagerEntity VillagerEntities}, regardless of {@link VillagerProfession}.
-//	 * <p><i>Random</i> tasks are randomly selected and executed during the Villager's lifetime, whereas <i>Constant</i> tasks are priorities that are always active.
-//	 * <p>Example Usage:
-//	 * <blockquote><pre>addBaseRandomTasks(TaskType.CORE, Pair.of(new FarmerVillagerTask(), 1));</pre></blockquote>
-//	 * @apiNote {@code PLAY} tasks may only be modified here.
-//	 * @see #addBaseConstantTasks(TaskType, Pair[]) addBaseConstantTasks
-//	 * @see #addRandomTasks(TaskType, Pair[]) addRandomTasks
-//	 * @implNote {@code Task}s are added to a single {@code List} passed to the {@link net.minecraft.entity.ai.brain.task.RandomTask RandomTask} constructor.  If the {@code TaskType} does not include a {@code RandomTask} by default, one will be added.
-//	 * @param taskType The {@code TaskType} of the specified task.
-//	 * @param tasks {@link Pair} containing the <b>Task</b> and its <b>Weight</b> (as used in a {@link net.minecraft.util.collection.WeightedList WeightedList}).
-//	 */
-//	@SafeVarargs
-//	public static void addBaseRandomTasks(TaskType taskType, Supplier<Pair<Task<? super VillagerEntity>, Integer>>... tasks)
-//	{
-//		addBaseRandomTasks(taskType, mapToBiFunction(tasks));
-//	}
-	
-	
-	
 	
 	
 	/**
@@ -539,18 +450,6 @@ public final class VillagerTaskProvider {
 	@NotNull
 	private static <T> ImmutableList<T> applyToTasks(List<BiFunction<VillagerProfession, Float, T>> l, final VillagerProfession p, final float f)
 	{
-//		if (l == null)
-//			return ImmutableList.of();
-//		
-//		final List<T> out = new ArrayList<>(l.size());
-//		for (BiFunction<VillagerProfession, Float, T> func : l) {
-//			if (func == null)
-//				continue;
-//			
-//			out.add(func.apply(p, f));
-//		}
-//		
-//		return out;
 		if (l == null)
 			return ImmutableList.of();
 		
@@ -580,16 +479,16 @@ public final class VillagerTaskProvider {
 	
 	/**
 	 * The type of {@code Task} being added.
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#CORE
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#WORK
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#PLAY
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#REST
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#MEET
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#IDLE
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#PANIC
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#PRERAID
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#RAID
-	 * @see com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType#HIDE
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#CORE
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#WORK
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#PLAY
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#REST
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#MEET
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#IDLE
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#PANIC
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#PRERAID
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#RAID
+	 * @see com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType#HIDE
 	 */
 	public enum TaskType {
 		/**
@@ -601,7 +500,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.LookAroundTask Look around}.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createCoreTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createCoreTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createCoreTasks(VillagerProfession, float) Formatted Reference
 		 */
 		CORE,
 		
@@ -615,7 +514,7 @@ public final class VillagerTaskProvider {
 		 * </ul>
 		 * @see WorkerVillagerTask Implementation Framework (optional)
 		 * @see VillagerTaskListProvider#createWorkTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createWorkTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createWorkTasks(VillagerProfession, float) Formatted Reference
 		 */
 		WORK,
 		
@@ -628,7 +527,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.WanderIndoorsTask Wander indoors}.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createRestTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createRestTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createRestTasks(VillagerProfession, float) Formatted Reference
 		 */
 		REST,
 		
@@ -652,7 +551,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.JumpInBedTask Babies jumping in bed}.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createIdleTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createIdleTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createIdleTasks(VillagerProfession, float) Formatted Reference
 		 */
 		IDLE,
 		
@@ -664,7 +563,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@code Escape from attacker}.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createPanicTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createPanicTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createPanicTasks(VillagerProfession, float) Formatted Reference
 		 */
 		PANIC,
 		
@@ -676,7 +575,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.FindWalkTargetTask Run around}.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createPreRaidTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createPreRaidTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createPreRaidTasks(VillagerProfession, float) Formatted Reference
 		 */
 		PRERAID,
 		
@@ -689,7 +588,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.CelebrateRaidWinTask Celebrate raid win}, executed when {@code Raid} is complete.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createRaidTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createRaidTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createRaidTasks(VillagerProfession, float) Formatted Reference
 		 */
 		RAID,
 		
@@ -701,7 +600,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.HideInHomeTask Hide inside home}.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createHideTasks(VillagerProfession, float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createHideTasks(VillagerProfession, float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createHideTasks(VillagerProfession, float) Formatted Reference
 		 */
 		HIDE,
 		
@@ -715,7 +614,7 @@ public final class VillagerTaskProvider {
 		 *     <li>{@link net.minecraft.entity.ai.brain.task.PlayWithVillagerBabiesTask Play with other "baby" Villagers}.</li>
 		 * </ul>
 		 * @see VillagerTaskListProvider#createPlayTasks(float) Vanilla Code Source
-		 * @see com.bythepowerofscience.examplemod.formatted.VillagerTaskListProvider#createPlayTasks(float) Formatted Reference
+		 * @see com.bythepowerofscience.reference.formatted.VillagerTaskListProvider#createPlayTasks(float) Formatted Reference
 		 * @apiNote {@code PLAY} tasks may only be added in the base tasks, due to the lack of a {@link VillagerProfession} to map to.
 		 */
 		PLAY

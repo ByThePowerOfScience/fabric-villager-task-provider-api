@@ -1,6 +1,7 @@
-package com.bythepowerofscience.taskapi.api;
+package com.bythepowerofscience.taskapi.impl;
 
-import com.bythepowerofscience.taskapi.impl.VillagerTaskProvider;
+import com.bythepowerofscience.taskapi.api.VillagerTaskProvider;
+import com.bythepowerofscience.taskapi.api.VillagerTaskProviderRegistry;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -10,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-import static com.bythepowerofscience.taskapi.impl.VillagerTaskProvider.TaskType.PLAY;
+import static com.bythepowerofscience.taskapi.api.VillagerTaskProvider.TaskType.PLAY;
 
-public class BackendVillagerTaskRetriever {
+public class VillagerTaskProviderRetriever {
 	
 	private static final Map<VillagerProfession, VillagerTaskProvider> villagerTaskProviderMap;
 	

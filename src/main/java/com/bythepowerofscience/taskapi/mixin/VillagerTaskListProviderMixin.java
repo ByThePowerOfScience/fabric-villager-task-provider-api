@@ -1,7 +1,7 @@
 package com.bythepowerofscience.taskapi.mixin;
 
-import com.bythepowerofscience.taskapi.api.BackendVillagerTaskRetriever;
-import com.bythepowerofscience.taskapi.impl.VillagerTaskProvider;
+import com.bythepowerofscience.taskapi.impl.VillagerTaskProviderRetriever;
+import com.bythepowerofscience.taskapi.api.VillagerTaskProvider;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.ai.brain.task.RandomTask;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.List;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked"})
 @Mixin(VillagerTaskListProvider.class)
 abstract class VillagerTaskListProviderMixin {
 	
@@ -36,18 +36,21 @@ abstract class VillagerTaskListProviderMixin {
 	
 	
 	
+	
+	
+	
 	@Inject(method = "createCoreTasks", at = @At("RETURN"), cancellable=true)
 	private static void addCustomConstantCoreTasks(VillagerProfession profession, float f, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> cir)
 	{
 		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
 		taskList.addAll(cir.getReturnValue());
-		taskList.addAll(BackendVillagerTaskRetriever.getConstantTasks(VillagerTaskProvider.TaskType.CORE, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.CORE, profession, f));
 		
 		//START ADD NEW RANDOM TASK
 		//	NOTE: This is to reuse the addCustomRandomTasks code.
 		//		If Mojang ever adds a "RandomTask" in this section, 
 		//			delete this block and uncomment the "@ModifyArgs" annotation below.
-		if (BackendVillagerTaskRetriever.hasCustomRandomTasks(VillagerTaskProvider.TaskType.CORE, profession))
+		if (VillagerTaskProviderRetriever.hasCustomRandomTasks(VillagerTaskProvider.TaskType.CORE, profession))
 		{
 			Args randomTasksDummyParam = new Args(new ImmutableList[] {ImmutableList.of()}) {
 				@Override
@@ -64,7 +67,7 @@ abstract class VillagerTaskListProviderMixin {
 			addCustomRandomCoreTasks(randomTasksDummyParam, profession, f);
 			ImmutableList<Pair<Task<? super VillagerEntity>, Integer>> randomTasks = randomTasksDummyParam.get(0);
 			if (!randomTasks.isEmpty())
-				taskList.add((Pair<Integer, ? extends Task<? super VillagerEntity>>) Pair.of(RANDOM_TASK_WEIGHT, new RandomTask<>(randomTasks)));
+				taskList.add(Pair.of(RANDOM_TASK_WEIGHT, new RandomTask<>(randomTasks)));
 		}
 		//END ADD NEW RANDOM TASK
 		
@@ -84,7 +87,7 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.CORE, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.CORE, profession, f));
 
 		args.set(listIndex, taskList.build());
 	}
@@ -92,6 +95,21 @@ abstract class VillagerTaskListProviderMixin {
 	
 	
 	
+	
+	
+	
+	
+	
+	@Inject(method = "createWorkTasks", at = @At(value = "RETURN"), cancellable=true)
+	private static void addCustomConstantWorkTasks(VillagerProfession profession, float f, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> cir)
+	{
+		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
+		
+		taskList.addAll(cir.getReturnValue());
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.WORK, profession, f));
+		
+		cir.setReturnValue(taskList.build());
+	}
 	
 	@ModifyArgs(method = "createWorkTasks", at = @At(value = "INVOKE", target = "net/minecraft/entity/ai/brain/task/RandomTask.<init>(Ljava/util/List;)V"))
 	private static void addCustomRandomWorkTasks(Args args, VillagerProfession profession, float f)
@@ -106,7 +124,7 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.WORK, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.WORK, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
@@ -114,6 +132,21 @@ abstract class VillagerTaskListProviderMixin {
 	
 	
 	
+	
+	
+	
+	
+	
+	@Inject(method = "createPlayTasks", at = @At(value = "RETURN"), cancellable=true)
+	private static void addCustomConstantPlayTasks(float f, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> cir)
+	{
+		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
+		
+		taskList.addAll(cir.getReturnValue());
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.PLAY, null, f));
+		
+		cir.setReturnValue(taskList.build());
+	}
 	
 	@ModifyArgs(method = "createPlayTasks", at = @At(value = "INVOKE", target = "net/minecraft/entity/ai/brain/task/RandomTask.<init>(Ljava/util/Map;Ljava/util/List;)V"))
 	private static void addCustomRandomPlayTasks(Args args, float f)
@@ -128,14 +161,23 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.PLAY, null, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.PLAY, null, f));
 		
 		args.set(listIndex, taskList.build());
 	}
 	
 	
 	
-	
+	@Inject(method = "createRestTasks", at = @At(value = "RETURN"), cancellable=true)
+	private static void addCustomConstantRestTasks(VillagerProfession profession, float f, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> cir)
+	{
+		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
+		
+		taskList.addAll(cir.getReturnValue());
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.REST, profession, f));
+		
+		cir.setReturnValue(taskList.build());
+	}
 	
 	
 	@ModifyArgs(method = "createRestTasks", at = @At(value = "INVOKE", target = "net/minecraft/entity/ai/brain/task/RandomTask.<init>(Ljava/util/Map;Ljava/util/List;)V"))
@@ -151,7 +193,7 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.REST, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.REST, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
@@ -160,6 +202,19 @@ abstract class VillagerTaskListProviderMixin {
 	
 	
 	
+	
+	
+	
+	@Inject(method = "createMeetTasks", at = @At(value = "RETURN"), cancellable=true)
+	private static void addCustomConstantMeetTasks(VillagerProfession profession, float f, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> cir)
+	{
+		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
+		
+		taskList.addAll(cir.getReturnValue());
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.MEET, profession, f));
+		
+		cir.setReturnValue(taskList.build());
+	}
 	
 	@ModifyArgs(method = "createMeetTasks", at = @At(value = "INVOKE", target = "net/minecraft/entity/ai/brain/task/RandomTask.<init>(Ljava/util/List;)V"))
 	private static void addCustomRandomMeetTasks(Args args, VillagerProfession profession, float f)
@@ -174,10 +229,13 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.MEET, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.MEET, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
+	
+	
+	
 	
 	
 	
@@ -188,7 +246,7 @@ abstract class VillagerTaskListProviderMixin {
 		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
 		
 		taskList.addAll(cir.getReturnValue());
-		taskList.addAll(BackendVillagerTaskRetriever.getConstantTasks(VillagerTaskProvider.TaskType.IDLE, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.IDLE, profession, f));
 		
 		cir.setReturnValue(taskList.build());
 	}
@@ -206,7 +264,7 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.IDLE, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.IDLE, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
@@ -222,13 +280,13 @@ abstract class VillagerTaskListProviderMixin {
 	{
 		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
 		taskList.addAll(cir.getReturnValue());
-		taskList.addAll(BackendVillagerTaskRetriever.getConstantTasks(VillagerTaskProvider.TaskType.PANIC, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.PANIC, profession, f));
 		
 		//START ADD NEW RANDOM TASK
 		//	NOTE: This is to reuse the addCustomRandomTasks code.
 		//		If Mojang ever adds a "RandomTask" in the target method, 
 		//			delete this block and uncomment the "@ModifyArgs" annotation below.
-		if (BackendVillagerTaskRetriever.hasCustomRandomTasks(VillagerTaskProvider.TaskType.PANIC, profession))
+		if (VillagerTaskProviderRetriever.hasCustomRandomTasks(VillagerTaskProvider.TaskType.PANIC, profession))
 		{
 			Args randomTasksDummyParam = new Args(new ImmutableList[] {ImmutableList.of()}) {
 				@Override
@@ -265,13 +323,25 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.PANIC, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.PANIC, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
 	
 	
 	
+	
+	
+	@Inject(method = "createPreRaidTasks", at = @At(value = "RETURN"), cancellable=true)
+	private static void addCustomConstantPreRaidTasks(VillagerProfession profession, float f, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> cir)
+	{
+		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
+		
+		taskList.addAll(cir.getReturnValue());
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.PRERAID, profession, f));
+		
+		cir.setReturnValue(taskList.build());
+	}
 	
 	@ModifyArgs(method = "createPreRaidTasks", at = @At(value = "INVOKE", target = "net/minecraft/entity/ai/brain/task/RandomTask.<init>(Ljava/util/List;)V"))
 	private static void addCustomRandomPreRaidTasks(Args args, VillagerProfession profession, float f)
@@ -286,14 +356,23 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.PRERAID, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.PRERAID, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
 	
 	
 	
-	
+	@Inject(method = "createRaidTasks", at = @At(value = "RETURN"), cancellable=true)
+	private static void addCustomConstantRaidTasks(VillagerProfession profession, float f, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>>> cir)
+	{
+		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
+		
+		taskList.addAll(cir.getReturnValue());
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.RAID, profession, f));
+		
+		cir.setReturnValue(taskList.build());
+	}
 	
 	@ModifyArgs(method = "createRaidTasks", at = @At(value = "INVOKE", target = "net/minecraft/entity/ai/brain/task/RandomTask.<init>(Ljava/util/List;)V"))
 	private static void addCustomRandomRaidTasks(Args args, VillagerProfession profession, float f)
@@ -308,10 +387,14 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.RAID, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.RAID, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
+	
+	
+	
+	
 	
 	
 	
@@ -320,13 +403,13 @@ abstract class VillagerTaskListProviderMixin {
 	{
 		ImmutableList.Builder<Pair<Integer, ? extends Task<? super VillagerEntity>>> taskList = ImmutableList.builder();
 		taskList.addAll(cir.getReturnValue());
-		taskList.addAll(BackendVillagerTaskRetriever.getConstantTasks(VillagerTaskProvider.TaskType.HIDE, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getConstantTasks(VillagerTaskProvider.TaskType.HIDE, profession, f));
 		
 		//START ADD NEW RANDOM TASK
 		//	NOTE: This is to reuse the addCustomRandomTasks code.
 		//		If Mojang ever adds a "RandomTask" in the target method, 
 		//			delete this block and uncomment the "@ModifyArgs" annotation below.
-		if (BackendVillagerTaskRetriever.hasCustomRandomTasks(VillagerTaskProvider.TaskType.HIDE, profession))
+		if (VillagerTaskProviderRetriever.hasCustomRandomTasks(VillagerTaskProvider.TaskType.HIDE, profession))
 		{
 			Args randomTasksDummyParam = new Args(new ImmutableList[] {ImmutableList.of()}) {
 				@Override
@@ -363,7 +446,7 @@ abstract class VillagerTaskListProviderMixin {
 		assert listIndex != -1 : "No List argument provided.";
 		taskList.addAll((List<Pair<Task<? super VillagerEntity>, Integer>>) args.get(listIndex));
 		
-		taskList.addAll(BackendVillagerTaskRetriever.getRandomTasks(VillagerTaskProvider.TaskType.HIDE, profession, f));
+		taskList.addAll(VillagerTaskProviderRetriever.getRandomTasks(VillagerTaskProvider.TaskType.HIDE, profession, f));
 		
 		args.set(listIndex, taskList.build());
 	}
